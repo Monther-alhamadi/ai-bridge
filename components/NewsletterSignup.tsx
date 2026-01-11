@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Mail, Sparkles, Send, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 
 interface NewsletterSignupProps {
   profession: string;
@@ -28,6 +29,10 @@ export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) 
       if (res.ok) {
         setStatus("success");
         setEmail("");
+        trackEvent("lead_capture", {
+          profession,
+          context: "newsletter_section"
+        });
       } else {
         console.error("Subscription failed");
         setStatus("idle"); // Reset on error for now

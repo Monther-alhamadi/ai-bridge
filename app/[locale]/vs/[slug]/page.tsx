@@ -7,8 +7,16 @@ import Link from "next/link";
 import { AdSlot } from "@/components/AdSlot";
 import { StickyCTA } from "@/components/StickyCTA";
 import { StarRating } from "@/components/StarRating";
+import { BuyersGuide } from "@/components/BuyersGuide";
+import { TrackedLink } from "@/components/TrackedLink";
 
+export const revalidate = 86400; // ISR: Revalidate every 24 hours
 
+export async function generateStaticParams() {
+  return comparisons.map((comparison) => ({
+    slug: comparison.slug,
+  }));
+}
 
 interface PageProps {
   params: {
@@ -112,15 +120,21 @@ export default function ComparisonPage({ params: { locale, slug } }: PageProps) 
           </div>
 
           <div className="pt-8">
-            <Link
+            <TrackedLink
               href={comparison.verdict.winnerName === toolA.name ? (toolA.affiliateUrl || "#") : (toolB.affiliateUrl || "#")}
+              name={comparison.verdict.winnerName}
+              context="comparison_verdict"
+              target="_blank"
               className="inline-flex items-center gap-3 rounded-2xl bg-background text-primary px-8 py-4 text-xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-xl"
             >
               {locale === "en" ? "Get The Winner" : "احصل على الفائز"}
               <ArrowRight className={locale === "ar" ? "rotate-180" : ""} />
-            </Link>
+            </TrackedLink>
           </div>
         </div>
+
+        {/* Dynamic Buyer's Guide */}
+        <BuyersGuide toolA={toolA.name} toolB={toolB.name} locale={locale} />
       </div>
 
       <StickyCTA 

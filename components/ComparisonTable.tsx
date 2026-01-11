@@ -5,6 +5,7 @@ import { Star, Check, X, ExternalLink, Award, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { StarRating } from "./StarRating";
+import { trackEvent } from "@/lib/analytics";
 
 interface ComparisonTableProps {
   tools: ToolReview[];
@@ -109,6 +110,11 @@ export function ComparisonTable({ tools, locale }: ComparisonTableProps) {
                     href={tool.affiliateUrl || tool.link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackEvent("affiliate_click", {
+                      item_id: tool.name.toLowerCase().replace(/\s+/g, '-'),
+                      item_name: tool.name,
+                      context: "comparison_table"
+                    })}
                     className={cn(
                       "group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold transition-all hover:scale-105 active:scale-95 shadow-lg",
                       tool.affiliateUrl 

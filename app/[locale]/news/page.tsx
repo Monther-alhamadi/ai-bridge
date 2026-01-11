@@ -7,7 +7,7 @@ import { AdSlot } from "@/components/AdSlot";
 import { StickyCTA } from "@/components/StickyCTA";
 import { StarRating } from "@/components/StarRating";
 
-
+export const revalidate = 3600; // ISR: Revalidate every 1 hour
 
 interface PageProps {
   params: {
