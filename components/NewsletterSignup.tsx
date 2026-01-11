@@ -13,15 +13,29 @@ export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus("loading");
-    // Simulate API call
-    setTimeout(() => {
-      setStatus("success");
-      setEmail("");
-    }, 1500);
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, profession }),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        console.error("Subscription failed");
+        setStatus("idle"); // Reset on error for now
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      setStatus("idle");
+    }
   };
 
   const labels = {

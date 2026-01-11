@@ -5,28 +5,42 @@ import { Zap, Gift, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StickyCTAProps {
-  profession: string;
+  profession?: string;
+  context?: "tool" | "comparison" | "news";
   locale: "en" | "ar";
   primaryToolLink: string;
 }
 
-export function StickyCTA({ profession, locale, primaryToolLink }: StickyCTAProps) {
+export function StickyCTA({ profession, context = "tool", locale, primaryToolLink }: StickyCTAProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Show after scrolling 500px
-      setIsVisible(window.scrollY > 500);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 15000); // Smart Logic: Show after 15 seconds
+
+    return () => clearTimeout(timer);
   }, []);
 
-  const text = {
-    badge: locale === "en" ? "FREE GIFT" : "هدية مجانية",
-    title: locale === "en" ? `${profession} Toolkit` : `حقيبة ${profession}`,
-    cta: locale === "en" ? "Get Now" : "احصل عليها",
+  const contentMap = {
+    tool: {
+      badge: locale === "en" ? "FREE GIFT" : "هدية مجانية",
+      title: locale === "en" ? `${profession} Toolkit` : `حقيبة ${profession}`,
+      cta: locale === "en" ? "Get Now" : "احصل عليها",
+    },
+    comparison: {
+      badge: locale === "en" ? "WINNER DEAL" : "عرض الفائز",
+      title: locale === "en" ? "Exclusive Discount" : "خصم حصري للأداة الفائزة",
+      cta: locale === "en" ? "Claim Offer" : "تفعيل الخصم",
+    },
+    news: {
+      badge: locale === "en" ? "STAY AHEAD" : "كن سباقاً",
+      title: locale === "en" ? "Get New Tools Daily" : "أحدث الأدوات يومياً",
+      cta: locale === "en" ? "Join Free" : "اشترك مجاناً",
+    }
   };
+
+  const text = contentMap[context];
 
   return (
     <div

@@ -4,6 +4,7 @@ import { ToolReview } from "@/config/professions";
 import { Star, Check, X, ExternalLink, Award, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { StarRating } from "./StarRating";
 
 interface ComparisonTableProps {
   tools: ToolReview[];
@@ -59,6 +60,9 @@ export function ComparisonTable({ tools, locale }: ComparisonTableProps) {
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {tool.description[locale]}
                     </p>
+                    <div className="pt-2">
+                      <StarRating toolName={tool.name} locale={locale} />
+                    </div>
                   </div>
                 </td>
 
