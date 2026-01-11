@@ -7,7 +7,12 @@ import { AdSlot } from "@/components/AdSlot";
 import { PromptGenerator } from "@/components/PromptGenerator";
 import { ShareButtons } from "@/components/ShareButtons";
 import { RelatedTools } from "@/components/RelatedTools";
-import { CheckCircle2 } from "lucide-react";
+import { ComparisonTable } from "@/components/ComparisonTable";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { StickyCTA } from "@/components/StickyCTA";
+import { SmartInsight } from "@/components/SmartInsight";
+import { CheckCircle2, Sparkles } from "lucide-react";
+
 
 interface PageProps {
   params: {
@@ -48,28 +53,79 @@ export default async function ProfessionToolPage({ params }: PageProps) {
   const pageTitle = profession.title[locale];
 
   // JSON-LD Schema
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": `${pageTitle} AI Prompt Tool`,
-    "description": profession.description[locale],
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "All",
-    "url": pageUrl,
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+  const schemas: any[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": `${pageTitle} AI Prompt Tool`,
+      "description": profession.description[locale],
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "url": pageUrl,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
     }
-  };
+  ];
+
+  // Add FAQ Schema if exists
+  if (profession.faqs.length > 0) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": profession.faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question[locale],
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer[locale]
+        }
+      }))
+    });
+  }
+
+  // Add Review/Product Schema for recommended tools
+  profession.recommendedTools.forEach(tool => {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {
+        "@type": "SoftwareApplication",
+        "name": tool.name,
+        "description": tool.description[locale],
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": tool.rating,
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": siteConfig.name
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": siteConfig.name
+      }
+    });
+  });
+
 
   return (
     <div className="container py-12 md:py-20">
-      {/* Schema Script */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* Schema Scripts */}
+      {schemas.map((schema, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+
 
       <div className="mx-auto max-w-4xl space-y-12">
         {/* Ad Slot (Top) */}
@@ -100,12 +156,29 @@ export default async function ProfessionToolPage({ params }: PageProps) {
           />
         </section>
 
+        {/* Smart AI Insight (Value-Added Layer) */}
+        <SmartInsight 
+          analysis={profession.smartAnalysis[locale]} 
+          locale={locale} 
+        />
+
+        {/* Newsletter Funnel (Lead Magnet) */}
+        <section id="newsletter">
+          <NewsletterSignup profession={pageTitle} locale={locale} />
+        </section>
+
+        {/* Comparison Table (Affiliate / Conversion) */}
+        <section>
+          <ComparisonTable tools={profession.recommendedTools} locale={locale} />
+        </section>
+
         {/* Ad Slot (Middle) */}
         <AdSlot position="middle" />
 
         {/* Content Section: Benefits */}
         <section className="rounded-2xl border bg-muted/30 p-8 md:p-12">
-          <h2 className="text-2xl font-bold md:text-3xl">
+          <h2 className="text-2xl font-bold md:text-3xl flex items-center gap-3">
+            <Sparkles className="h-8 w-8 text-primary" />
             {locale === "en" ? `Benefits of AI for ${pageTitle}` : `فوائد الذكاء الاصطناعي لـ ${pageTitle}`}
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -118,14 +191,39 @@ export default async function ProfessionToolPage({ params }: PageProps) {
           </div>
         </section>
 
+        {/* FAQ Section (SEO Layer) */}
+        {profession.faqs.length > 0 && (
+          <section className="space-y-8">
+            <h2 className="text-2xl font-bold md:text-3xl">
+              {locale === "en" ? "Frequently Asked Questions" : "الأسئلة الشائعة"}
+            </h2>
+            <div className="grid gap-4">
+              {profession.faqs.map((faq, i) => (
+                <div key={i} className="rounded-xl border bg-card p-6 shadow-sm">
+                  <h3 className="text-lg font-bold">{faq.question[locale]}</h3>
+                  <p className="mt-2 text-muted-foreground">{faq.answer[locale]}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Related Tools */}
         <section className="pt-8">
           <RelatedTools currentSlug={profession.slug} locale={locale} />
         </section>
 
+
         {/* Ad Slot (Footer) */}
         <AdSlot position="footer" />
       </div>
+
+      {/* Sticky Conversion Bar */}
+      <StickyCTA 
+        profession={pageTitle} 
+        locale={locale} 
+        primaryToolLink={profession.recommendedTools[0]?.affiliateUrl || profession.recommendedTools[0]?.link || "#"} 
+      />
     </div>
   );
 }
