@@ -1,5 +1,8 @@
 import { professions } from "@/config/professions";
 import { ArrowRight, GraduationCap, Calculator, Scale, Users, Store, BookOpen, Video, Sparkles } from "lucide-react";
+import type { Locale } from "@/config/i18n";
+import { getDictionary } from "@/lib/get-dictionary";
+import Link from "next/link";
 
 const IconMap: Record<string, any> = {
   GraduationCap,
@@ -11,13 +14,15 @@ const IconMap: Record<string, any> = {
   Video,
 };
 
+interface LandingPageProps {
+  params: {
+    locale: Locale;
+  };
+}
 
-export default async function LandingPage({
-  params: { locale },
-}: {
-  params: { locale: Locale };
-}) {
+export default async function LandingPage({ params: { locale } }: LandingPageProps) {
   const dictionary = await getDictionary(locale);
+
 
   return (
     <div className="flex flex-col gap-20 pb-20">

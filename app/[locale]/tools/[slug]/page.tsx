@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { professions } from "@/config/professions";
-import { Locale } from "@/config/i18n";
+import type { Locale } from "@/config/i18n";
 import { siteConfig } from "@/config/site";
 import { AdSlot } from "@/components/AdSlot";
 import { PromptGenerator } from "@/components/PromptGenerator";
@@ -15,6 +15,7 @@ interface PageProps {
     slug: string;
   };
 }
+
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const profession = professions.find((p) => p.slug === params.slug);
