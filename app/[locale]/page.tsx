@@ -1,0 +1,104 @@
+import { professions } from "@/config/professions";
+import { ArrowRight, GraduationCap, Calculator, Scale, Users, Store, BookOpen, Video, Sparkles } from "lucide-react";
+
+const IconMap: Record<string, any> = {
+  GraduationCap,
+  Calculator,
+  Scale,
+  Users,
+  Store,
+  BookOpen,
+  Video,
+};
+
+
+export default async function LandingPage({
+  params: { locale },
+}: {
+  params: { locale: Locale };
+}) {
+  const dictionary = await getDictionary(locale);
+
+  return (
+    <div className="flex flex-col gap-20 pb-20">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-background pt-16 md:pt-24 lg:pt-32 text-center md:text-start">
+        <div className="container relative z-10 flex flex-col items-center text-center">
+          <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              {dictionary.hero.title}
+            </span>
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+            {dictionary.hero.subtitle}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href={`/${locale}/tools/teacher`}
+              className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:scale-105"
+            >
+              {dictionary.hero.cta_primary}
+              <ArrowRight className={locale === "ar" ? "mr-2 h-5 w-5 rotate-180" : "ml-2 h-5 w-5"} />
+            </Link>
+          </div>
+        </div>
+
+        <div className="absolute top-1/2 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 bg-primary/10 blur-[120px]" />
+      </section>
+
+      {/* Professions Grid */}
+      <section className="container">
+        <div className="space-y-4 text-center">
+          <h2 className="text-3xl font-bold md:text-4xl">
+            {locale === "en" ? "Select Your Profession" : "اختر مهنتك"}
+          </h2>
+          <p className="mx-auto max-w-2xl text-muted-foreground">
+            {locale === "en" 
+              ? "We provide specialized AI tools for various professional fields." 
+              : "نحن نقدم أدوات ذكاء اصطناعي متخصصة لمختلف المجالات المهنية."}
+          </p>
+        </div>
+        
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {professions.map((p) => {
+            const Icon = IconMap[p.icon] || Sparkles;
+            return (
+              <Link
+                key={p.id}
+                href={`/${locale}/tools/${p.slug}`}
+                className="group relative overflow-hidden rounded-2xl border bg-card p-8 transition-all hover:border-primary hover:shadow-xl"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <h3 className="mt-6 text-xl font-bold">{p.title[locale]}</h3>
+                <p className="mt-2 text-muted-foreground">
+                  {p.description[locale]}
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-primary">
+                  {locale === "en" ? "Explore Tools" : "استكشف الأدوات"}
+                  <ArrowRight className={locale === "ar" ? "h-4 w-4 rotate-180" : "h-4 w-4"} />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+
+      {/* Placeholder for other sections */}
+      <section className="container">
+        <div className="rounded-3xl bg-muted/50 p-12 text-center border">
+          <h2 className="text-3xl font-bold mb-4">
+            {locale === "en" ? "Ready to transform your career?" : "هل أنت مستعد لتغيير مسارك المهني؟"}
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            {locale === "en" 
+              ? "Join thousands of professionals already using AI Bridge." 
+              : "انضم إلى آلاف المحترفين الذين يستخدمون بالفعل جسر الذكاء الاصطناعي."}
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}

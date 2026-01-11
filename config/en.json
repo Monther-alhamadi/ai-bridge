@@ -1,0 +1,17 @@
+{
+  "common": {
+    "appName": "AI Bridge",
+    "description": "Connecting you to the future of work."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Build Your Future with AI Support",
+    "subtitle": "Discover the profession that suits you best in the age of artificial intelligence.",
+    "cta_primary": "Find your Profession",
+    "cta_secondary": "Learn More"
+  }
+}
