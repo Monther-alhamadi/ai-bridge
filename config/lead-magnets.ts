@@ -3,7 +3,7 @@ export const LEAD_MAGNETS: Record<string, { pdfUrl: string; tagName: string; nam
   "teacher": {
     pdfUrl: "https://example.com/assets/ai-classroom-guide-2026.pdf", // User to replace with hosted PDF
     tagName: "teacher_lead",
-    name: { en: "The 2026 AI Classroom Guide", ar: "حقيبة المعلم الرقمي 2026" }
+    name: { en: "The Ultimate AI Teacher Kit (2026)", ar: "دليل المعلم الفائق: 50 برومبت للتحضير" }
   },
   "academic-researcher": {
     pdfUrl: "https://example.com/assets/ai-research-handbook.pdf",

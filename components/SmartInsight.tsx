@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Bot, Code, Palette, Lightbulb, ArrowRight, BookOpen, Wrench, Copy } from "lucide-react";
+import { Sparkles, Bot, Code, Palette, Lightbulb, ArrowRight, BookOpen, Wrench, Copy, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
@@ -12,18 +12,31 @@ interface SmartInsightProps {
 }
 
 // Logic Matrix
+// Logic Matrix
 const LOGIC_MATRIX = {
-  education: {
-    keywords: ["teach", "lesson", "student", "class", "grade", "explain", "درس", "شرح", "طالب", "تعليم"],
+  education_lesson: {
+    keywords: ["lesson", "plan", "teach", "class", "درس", "شرح", "تحضير", "حصة"],
     promptTemplate: {
-      en: "Act as a World-Class Educator specializing in [Topic]. Design an interactive Socratic lesson plan that challenges students to...",
-      ar: "تقمص دور خبير تربوي متخصص في [الموضوع]. صمم خطة درس تفاعلية تعتمد على الطريقة السقراطية لتحفيز الطلاب على..."
+      en: "Act as a Curriculum Expert. Design a 45-minute lesson plan for [Topic] using the 5E Model (Engage, Explore, Explain, Elaborate, Evaluate)...",
+      ar: "بصفتك خبير مناهج، صمم خطة درس لمدة 45 دقيقة عن [الموضوع] باستخدام نموذج 5E (التهيئة، الاستكشاف، الشرح، التوسع، التقويم)..."
     },
     strategy: {
-      en: "Using the Socratic Method shifts focus from memorization to critical thinking, increasing retention by 60%.",
-      ar: "استخدام الطريقة السقراطية يحول التركيز من الحفظ إلى التفكير النقدي، مما يرفع معدل الاستيعاب بنسبة 60%."
+      en: "The 5E Model ensures active learning. Using this structure saves ~30 mins of planning time.",
+      ar: "نموذج 5E يضمن التعلم النشط. استخدام هذا الهيكل يوفر عليك 30 دقيقة من التحضير."
     },
-    tool: { name: "WolframAlpha", link: "https://www.wolframalpha.com/" }
+    tool: { name: "Curipod", link: "https://curipod.com" }
+  },
+  education_quiz: {
+    keywords: ["quiz", "test", "exam", "grade", "question", "اختبار", "امتحان", "أسئلة", "تقييم"],
+    promptTemplate: {
+      en: "Create a quiz with 5-10 questions about [Topic]. Include 3 MCQs, 2 True/False, and an Answer Key. Format it for...",
+      ar: "أنشئ اختباراً من 5-10 أسئلة عن [الموضوع]. ضمن 3 أسئلة اختيار من متعدد، وسؤالين صح/خطأ، مع مفتاح الإجابة."
+    },
+    strategy: {
+      en: "Automating quiz generation allows you to create multiple versions (A/B) to prevent cheating.",
+      ar: "أتمتة بناء الاختبارات تسمح لك بإنشاء نماذج متعددة (أ/ب) لمنع الغش دون جهد إضافي."
+    },
+    tool: { name: "Quizizz AI", link: "https://quizizz.com" }
   },
   tech: {
     keywords: ["code", "debug", "function", "api", "app", "react", "python", "برمجة", "كود", "تطبيق"],
@@ -70,7 +83,11 @@ export function SmartInsight({ profession, locale }: SmartInsightProps) {
 
   const detectIntent = (text: string) => {
     const lowerText = text.toLowerCase();
-    if (LOGIC_MATRIX.education.keywords.some(k => lowerText.includes(k))) return LOGIC_MATRIX.education;
+    
+    // Education Sub-Intents
+    if (LOGIC_MATRIX.education_quiz.keywords.some(k => lowerText.includes(k))) return LOGIC_MATRIX.education_quiz;
+    if (LOGIC_MATRIX.education_lesson.keywords.some(k => lowerText.includes(k))) return LOGIC_MATRIX.education_lesson;
+    
     if (LOGIC_MATRIX.tech.keywords.some(k => lowerText.includes(k))) return LOGIC_MATRIX.tech;
     if (LOGIC_MATRIX.creative.keywords.some(k => lowerText.includes(k))) return LOGIC_MATRIX.creative;
     return LOGIC_MATRIX.default;
@@ -176,6 +193,13 @@ export function SmartInsight({ profession, locale }: SmartInsightProps) {
             <div className="absolute top-0 right-0 bg-primary/10 p-3 rounded-bl-2xl">
               <Wrench className="h-5 w-5 text-primary" />
             </div>
+            
+            {/* Expert Badge */}
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+               <CheckCircle2 className="h-3 w-3" />
+               {locale === "en" ? "Expert Choice" : "خيار الخبراء"}
+            </div>
+
             <h4 className="font-bold text-primary mb-2">
                {locale === "en" ? "Recommended Tool" : "الأداة المقترحة"}
             </h4>

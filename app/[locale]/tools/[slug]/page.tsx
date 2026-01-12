@@ -11,6 +11,8 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { StickyCTA } from "@/components/StickyCTA";
 import { SmartInsight } from "@/components/SmartInsight";
+import { TeacherTaskHub } from "@/components/TeacherTaskHub";
+import { ExamGenerator } from "@/components/ExamGenerator";
 import { CheckCircle2, Sparkles } from "lucide-react";
 
 
@@ -156,11 +158,18 @@ export default async function ProfessionToolPage({ params }: PageProps) {
           />
         </section>
 
-        {/* Smart AI Insight (Value-Added Layer) */}
         <SmartInsight 
           profession={profession.slug} 
           locale={locale} 
         />
+
+        {/* TEACHER OS: Specialized Dashboard (Phase 10) */}
+        {params.slug === "teacher" && (
+          <section className="space-y-12 animate-in fade-in slide-in-from-bottom-8">
+            <TeacherTaskHub locale={locale} />
+            <ExamGenerator locale={locale} />
+          </section>
+        )}
 
         {/* Newsletter Funnel (Lead Magnet) */}
         <section id="newsletter">
