@@ -6,15 +6,15 @@ import { supabase } from "@/lib/supabase";
 
 export const dynamic = 'force-dynamic';
 
-const parser = new Parser();
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const SOURCES = [
   "https://techcrunch.com/feed/",
   "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml"
 ];
 
 export async function GET() {
+  const parser = new Parser();
+  const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+
   try {
     if (!supabase) {
       return NextResponse.json({ 
@@ -23,7 +23,7 @@ export async function GET() {
       }, { status: 500 });
     }
 
-    if (!process.env.GROQ_API_KEY) {
+    if (!groq) {
       return NextResponse.json({ 
         success: false, 
         error: "Groq not configured. Please add GROQ_API_KEY to .env.local" 
