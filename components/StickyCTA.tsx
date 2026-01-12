@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Zap, Gift, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface StickyCTAProps {
   profession?: string;
@@ -45,36 +45,26 @@ export function StickyCTA({ profession, context = "tool", locale, primaryToolLin
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 transition-all duration-500 md:bottom-10",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
+        "z-50 fixed bottom-0 left-0 right-0 p-4 transition-transform duration-500 ease-in-out md:hidden",
+        isVisible ? "translate-y-0" : "translate-y-full"
       )}
     >
-      <div className="group relative overflow-hidden rounded-2xl border bg-primary p-1 shadow-2xl">
-        {/* Animated background flare */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-foreground/20 to-primary opacity-50 group-hover:animate-shimmer" />
-        
-        <div className="relative flex items-center justify-between gap-4 rounded-xl bg-primary px-4 py-3 text-primary-foreground">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/20">
-              <Gift className="h-6 w-6 animate-bounce" />
-            </div>
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-widest opacity-80">
-                {text.badge}
-              </div>
-              <div className="text-sm font-bold">
-                {text.title}
-              </div>
-            </div>
+      <div className="mx-auto max-w-sm rounded-[2rem] border bg-background/90 p-4 shadow-2xl backdrop-blur-xl ring-1 ring-primary/20">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">
+              {text.badge}
+            </span>
+            <span className="font-bold text-foreground">
+              {text.title}
+            </span>
           </div>
-
-          <a
-            href="#newsletter"
-            className="flex items-center gap-1 rounded-lg bg-primary-foreground px-4 py-2 text-sm font-black text-primary transition-transform active:scale-95"
+          <Link
+            href={primaryToolLink}
+            className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-transform active:scale-95 animate-pulse hover:animate-none"
           >
             {text.cta}
-            <ChevronRight className={cn("h-4 w-4", locale === "ar" && "rotate-180")} />
-          </a>
+          </Link>
         </div>
       </div>
     </div>
