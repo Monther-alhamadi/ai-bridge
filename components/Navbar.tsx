@@ -25,6 +25,12 @@ export async function Navbar({ locale }: { locale: Locale }) {
               {dictionary.nav.home}
             </Link>
             <Link
+              href={`/${locale}/tools`}
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              {locale === "en" ? "Explore Tools" : "استكشف الأدوات"}
+            </Link>
+            <Link
               href={`/${locale}/pricing`}
               className="text-sm font-medium transition-colors hover:text-primary"
             >

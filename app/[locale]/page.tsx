@@ -47,7 +47,7 @@ export default async function LandingPage({ params: { locale } }: LandingPagePro
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href={`/${locale}/tools/teacher`}
+              href="#professions"
               className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:scale-105"
             >
               {dictionary.hero.cta_primary}
@@ -75,7 +75,7 @@ export default async function LandingPage({ params: { locale } }: LandingPagePro
       </section>
 
       {/* Professions Grid */}
-      <section className="container">
+      <section id="professions" className="container scroll-mt-24">
         <div className="space-y-4 text-center">
           <h2 className="text-3xl font-bold md:text-4xl">
             {locale === "en" ? "Select Your Profession" : "اختر مهنتك"}

@@ -67,7 +67,8 @@ export default async function ProfessionToolPage({ params }: PageProps) {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: locale === "en" ? "Tools" : "الأدوات", href: `/${locale}` },
+    { label: locale === "en" ? "Hub" : "الرئيسية", href: `/${locale}` },
+    { label: locale === "en" ? "Explore Tools" : "استكشف الأدوات", href: `/${locale}/tools` },
     { label: pageTitle, href: `/${locale}/tools/${params.slug}` }
   ];
 

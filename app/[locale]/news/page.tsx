@@ -154,7 +154,7 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
       <StickyCTA 
         context="news"
         locale={locale as any} 
-        primaryToolLink={news.length > 0 ? news[0].tool_affiliate : "/ar/news"}
+        primaryToolLink={news.length > 0 ? news[0].tool_affiliate : `/${locale}/tools`}
       />
     </div>
   );

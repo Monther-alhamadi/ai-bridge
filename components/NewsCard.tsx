@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, ExternalLink, Zap, ArrowRight } from "lucide-react";
+import { Star, ExternalLink, Zap, ArrowRight, Sparkles } from "lucide-react";
 import { TrackedLink } from "@/components/TrackedLink";
 import { Badge } from "@/components/Badge";
 import { trackEvent } from "@/lib/analytics";
@@ -106,7 +106,18 @@ export function NewsCard({ item, locale }: NewsCardProps) {
             {locale === "en" ? "Try This AI Product" : "جرب هذا المنتج الذكي"}
             <ArrowRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${locale === 'ar' ? 'rotate-180' : ''}`} />
           </TrackedLink>
-        ) : null}
+        ) : (
+          <TrackedLink
+            href={`/${locale}/tools`}
+            name="General Hub Conversion"
+            context="news_hub_redirect"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-secondary py-3 text-sm font-bold text-secondary-foreground shadow-md hover:scale-[1.02] active:scale-95 transition-all group/btn"
+          >
+            <Sparkles className="h-4 w-4 fill-current group-hover:rotate-12 transition-transform" />
+            {locale === "en" ? "Explore AI for Your Career" : "استكشف الذكاء لمهنتك"}
+            <ArrowRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${locale === 'ar' ? 'rotate-180' : ''}`} />
+          </TrackedLink>
+        )}
       </div>
     </div>
   );
