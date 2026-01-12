@@ -3,6 +3,7 @@ import { ArrowRight, GraduationCap, Calculator, Scale, Users, Store, BookOpen, V
 import type { Locale } from "@/config/i18n";
 import { getDictionary } from "@/lib/get-dictionary";
 import Link from "next/link";
+import { AIQuiz } from "@/components/AIQuiz";
 
 const IconMap: Record<string, any> = {
   GraduationCap,
@@ -49,6 +50,21 @@ export default async function LandingPage({ params: { locale } }: LandingPagePro
         </div>
 
         <div className="absolute top-1/2 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 bg-primary/10 blur-[120px]" />
+      </section>
+      
+      {/* Quiz Section (Viral Loop) */}
+      <section className="container py-12 md:py-24">
+        <div className="text-center mb-12 space-y-4">
+          <h2 className="text-3xl font-black md:text-5xl tracking-tight">
+            {locale === "en" ? "Not sure where to start?" : "محتار من أين تبدأ؟"}
+          </h2>
+          <p className="text-xl text-muted-foreground">
+            {locale === "en" 
+              ? "Take the 30-second quiz to find your perfect AI partner." 
+              : "جرب اختبار الـ 30 ثانية لاكتشاف رفيقك المثالي في الذكاء الاصطناعي."}
+          </p>
+        </div>
+        <AIQuiz locale={locale} />
       </section>
 
       {/* Professions Grid */}
