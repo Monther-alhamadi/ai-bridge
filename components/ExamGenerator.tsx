@@ -43,6 +43,7 @@ export function ExamGenerator({ locale }: ExamGeneratorProps) {
         difficulty,
         mcqCount,
         essayCount,
+        trueFalseCount,
         language: locale,
         context: fileName ? `Source: ${fileName}` : undefined
     });

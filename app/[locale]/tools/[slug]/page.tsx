@@ -13,11 +13,15 @@ import { StickyCTA } from "@/components/StickyCTA";
 import { SmartInsight } from "@/components/SmartInsight";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { TeacherModule } from "@/components/modules/TeacherModule";
+import { ContentCreatorModule } from "@/components/modules/ContentCreatorModule";
+import { BusinessOwnerModule } from "@/components/modules/BusinessOwnerModule";
 import { CheckCircle2, Sparkles } from "lucide-react";
 
 // Module Registry mapping slugs to their specialized components
 const MODULE_REGISTRY: Record<string, any> = {
   teacher: TeacherModule,
+  "content-creator": ContentCreatorModule,
+  "business-owner": BusinessOwnerModule,
 };
 
 

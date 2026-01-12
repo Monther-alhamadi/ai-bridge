@@ -3,13 +3,17 @@ import { professions } from "@/config/professions";
 import type { Locale } from "@/config/i18n";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ExamGenerator } from "@/components/ExamGenerator";
+import { ModularParametricTool } from "@/components/ModularParametricTool";
 import { AdSlot } from "@/components/AdSlot";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 // Component Registry for Tool Modules
 const TOOL_COMPONENTS: Record<string, any> = {
   "exam-generator": ExamGenerator,
-  // Future tools like "campaign-planner", "legal-drafter" will go here
+  "lesson-planner": ModularParametricTool,
+  "career-assistant": ModularParametricTool,
+  "smart-consultant": ModularParametricTool,
+  "script-writer": ModularParametricTool,
 };
 
 interface ToolPageProps {
@@ -65,7 +69,7 @@ export default function DedicatedToolPage({ params }: ToolPageProps) {
         <AdSlot position="top" />
 
         <div className="relative">
-             <ToolComponent locale={locale} />
+             <ToolComponent locale={locale} profession={params.slug} toolSlug={toolSlug} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
