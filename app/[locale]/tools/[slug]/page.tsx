@@ -158,7 +158,7 @@ export default async function ProfessionToolPage({ params }: PageProps) {
 
         {/* Smart AI Insight (Value-Added Layer) */}
         <SmartInsight 
-          analysis={profession.smartAnalysis[locale]} 
+          profession={profession.slug} 
           locale={locale} 
         />
 

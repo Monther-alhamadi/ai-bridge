@@ -13,6 +13,7 @@ interface NewsletterSignupProps {
 export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [assetName, setAssetName] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +28,9 @@ export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) 
       });
 
       if (res.ok) {
+        const data = await res.json();
+        // data.asset is { en: "...", ar: "..." }
+        setAssetName(data.asset ? data.asset[locale] : ""); 
         setStatus("success");
         setEmail("");
         trackEvent("lead_capture", {
@@ -35,7 +39,7 @@ export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) 
         });
       } else {
         console.error("Subscription failed");
-        setStatus("idle"); // Reset on error for now
+        setStatus("idle");
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -50,7 +54,9 @@ export function NewsletterSignup({ profession, locale }: NewsletterSignupProps) 
       : `احصل على أكثر من 50 برومبت سري وأحدث أخبار الذكاء الاصطناعي لمستقبلك المهني.`,
     placeholder: locale === "en" ? "Enter your business email" : "أدخل بريدك الإلكتروني العملي",
     button: locale === "en" ? "Get Free Prompts" : "احصل على البرومبتات مجاناً",
-    success: locale === "en" ? "Check your inbox! The toolkit is on its way." : "تحقق من بريدك! القائمة في طريقها إليك.",
+    success: locale === "en" 
+      ? `Check your inbox! The ${assetName || "toolkit"} is on its way.` 
+      : `تحقق من بريدك! ${assetName || "الحقيبة"} في طريقها إليك.`,
     spam: locale === "en" ? "Zero spam. Only high-value content." : "لا رسائل مزعجة. فقط محتوى عالي القيمة.",
   };
 

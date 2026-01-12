@@ -36,10 +36,10 @@ export async function Navbar({ locale }: { locale: Locale }) {
           <LanguageSwitcher currentLocale={locale} />
           <ThemeToggle />
           <Link
-            href="#"
+            href={`/${locale}/pricing`}
             className="hidden md:inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
-            {dictionary.nav.login}
+            {dictionary.nav.login || (locale === "en" ? "Join Waitlist" : "انضم للقائمة")}
           </Link>
         </div>
       </div>
