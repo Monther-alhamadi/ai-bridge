@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const AFFILIATE_MAP: Record<string, string> = {
   // Tools
   "chatgpt": "https://openai.com/chatgpt",

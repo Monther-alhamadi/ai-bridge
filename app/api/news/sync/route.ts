@@ -4,6 +4,8 @@ import Parser from "rss-parser";
 import Groq from "groq-sdk";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = 'force-dynamic';
+
 const parser = new Parser();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
