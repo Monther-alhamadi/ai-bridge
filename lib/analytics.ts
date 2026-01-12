@@ -5,7 +5,7 @@
  * Tracks high-intent actions to optimize ROI.
  */
 
-type EventName = "affiliate_click" | "lead_capture" | "outcome_view" | "star_rating";
+type EventName = "affiliate_click" | "lead_capture" | "outcome_view" | "star_rating" | "begin_checkout";
 
 interface EventParams {
   item_id?: string;
