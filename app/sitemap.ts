@@ -3,20 +3,22 @@ import { siteConfig } from "@/config/site";
 import { i18n } from "@/config/i18n";
 import { professions } from "@/config/professions";
 
+import { comparisons } from "@/config/comparisons";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const locales = i18n.locales;
   
-  // Static routes
-  const staticRoutes = [""].flatMap((route) =>
+  // Static routes (Home, News)
+  const staticRoutes = ["", "/news"].flatMap((route) =>
     locales.map((locale) => ({
       url: `${siteConfig.url}/${locale}${route}`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
-      priority: 1.0,
+      priority: route === "" ? 1.0 : 0.8,
     }))
   );
 
-  // Dynamic profession tools routes
+  // Dynamic: Profession Tools
   const professionRoutes = professions.flatMap((p) =>
     locales.map((locale) => ({
       url: `${siteConfig.url}/${locale}/tools/${p.slug}`,
@@ -26,5 +28,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  return [...staticRoutes, ...professionRoutes];
+  // Dynamic: Comparisons (High Value)
+  const comparisonRoutes = comparisons.flatMap((c) =>
+    locales.map((locale) => ({
+      url: `${siteConfig.url}/${locale}/vs/${c.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    }))
+  );
+
+  return [...staticRoutes, ...professionRoutes, ...comparisonRoutes];
 }
