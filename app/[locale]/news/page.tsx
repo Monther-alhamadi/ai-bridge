@@ -18,6 +18,11 @@ interface PageProps {
 
 async function getNews() {
   try {
+    if (!supabase) {
+      console.warn("Supabase not configured. Using fallback empty news.");
+      return [];
+    }
+
     const { data, error } = await supabase
       .from("news")
       .select("*")
@@ -103,17 +108,26 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
         <AdSlot position="top" />
 
         {/* Bento Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-           {/* Primary Item (Large) */}
-           <div className="sm:col-span-2 lg:row-span-2">
-             <NewsCard item={news[0] as any} locale={locale as any} />
-           </div>
-           
-           {/* Regular Items */}
-           {news.slice(1).map((item: any) => (
-             <NewsCard key={item.id} item={item as any} locale={locale as any} />
-           ))}
-        </div>
+        {news.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+             {/* Primary Item (Large) */}
+             <div className="sm:col-span-2 lg:row-span-2">
+               <NewsCard item={news[0] as any} locale={locale as any} />
+             </div>
+             
+             {/* Regular Items */}
+             {news.slice(1).map((item: any) => (
+               <NewsCard key={item.id} item={item as any} locale={locale as any} />
+             ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 border rounded-3xl bg-muted/20">
+            <Newspaper className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-50" />
+            <p className="text-muted-foreground">
+              {locale === "en" ? "No news available yet. Check back later!" : "لا يوجد أخبار حالياً. عد لاحقاً!"}
+            </p>
+          </div>
+        )}
 
         {/* Ad Slot Middle */}
         <AdSlot position="middle" />
@@ -140,7 +154,7 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
       <StickyCTA 
         context="news"
         locale={locale as any} 
-        primaryToolLink={news[0].tool_affiliate}
+        primaryToolLink={news.length > 0 ? news[0].tool_affiliate : "/ar/news"}
       />
     </div>
   );

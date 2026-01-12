@@ -14,6 +14,20 @@ const SOURCES = [
 
 export async function GET() {
   try {
+    if (!supabase) {
+      return NextResponse.json({ 
+        success: false, 
+        error: "Supabase not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local" 
+      }, { status: 500 });
+    }
+
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json({ 
+        success: false, 
+        error: "Groq not configured. Please add GROQ_API_KEY to .env.local" 
+      }, { status: 500 });
+    }
+
     console.log("Starting Live News Sync via Groq...");
     
     // 1. Fetch Real RSS Feeds
