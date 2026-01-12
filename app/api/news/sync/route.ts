@@ -1,64 +1,101 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import Parser from "rss-parser";
+import Groq from "groq-sdk";
+import { supabase } from "@/lib/supabase";
 
-// High-Interest Mock Data (Simulating Scaled Scraping)
-const MOCK_SOURCES = [
-  {
-    title_en: "OpenAI launches Strawberry (o1-preview)",
-    title_ar: "أوبن إي آي تطلق نموذج Strawberry المتطور",
-    summary_en: "A new reasoning model designed for complex STEM tasks and coding.",
-    summary_ar: "نموذج تفكير برمج عالي القدرة، مصمم لحل المسائل العلمية المعقدة والبرمجة المتقدمة.",
-    source: "OpenAI Blog",
-    link: "https://openai.com",
-    tag: "AI Model",
-    tool_affiliate: "https://openai.com"
-  },
-  {
-    title_en: "Cursor AI editor hits $50M ARR",
-    title_ar: "آداة Cursor AI لتخطي 50 مليون دولار مبيعات سنوية",
-    summary_en: "The AI-first code editor is revolutionizing how developers write code.",
-    summary_ar: "محرر الأكواد الأول المعتمد على الذكاء الاصطناعي يغير قواعد اللعبة للمبرمجين.",
-    source: "TechCrunch",
-    link: "https://techcrunch.com",
-    tag: "Coding",
-    tool_affiliate: "https://cursor.com"
-  },
-  {
-    title_en: "Flux.1: The new king of AI image generation?",
-    title_ar: "Flux.1: الملك الجديد لتوليد الصور بالذكاء الاصطناعي؟",
-    summary_en: "Black Forest Labs releases a high-fidelity image gen model that rivals Midjourney.",
-    summary_ar: "إطلاق نموذج Flux.1 الذي يقدم دقة خيالية في الصور، منافساً قوياً لـ Midjourney.",
-    source: "The Verge",
-    link: "https://theverge.com",
-    tag: "Design",
-    tool_affiliate: "https://fal.ai"
-  }
+const parser = new Parser();
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const SOURCES = [
+  "https://techcrunch.com/feed/",
+  "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml"
 ];
 
 export async function GET() {
   try {
-    // 1. Scraper Simulation (In production, use rss-parser or similar)
-    console.log("Syncing news started...");
+    console.log("Starting Live News Sync via Groq...");
     
-    // 2. AI Summarization Simulation
-    // In production: const response = await openai.chat.completions.create({...})
-    const processedNews = MOCK_SOURCES.map(item => ({
-      ...item,
-      id: Math.random().toString(36).substring(7),
-      date: new Date().toISOString(),
-      score: 4.5 + Math.random() * 0.5, // Automated popularity scoring
-    }));
+    // 1. Fetch Real RSS Feeds
+    const allFeeds = await Promise.all(SOURCES.map(url => parser.parseURL(url)));
+    const items = allFeeds.flatMap(feed => feed.items).slice(0, 10); // Limit to top 10 for free tier speed
 
-    // 3. Trigger ISR Revalidation for the News Page
+    const processedNews = [];
+
+    for (const item of items) {
+      // 2. Deduplication check in Supabase
+      const { data: existing } = await supabase
+        .from("news")
+        .select("id")
+        .eq("source_link", item.link)
+        .single();
+
+      if (existing) continue;
+
+      // 3. AI Processing via Groq (Free & Fast)
+      try {
+        const completion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert AI news editor. Summarize the following news title and content into a PROFESSIONAL, engaging Arabic summary and a concise English summary. Tone: Strategic and bold. Identify if the news is related to 'education', 'coding', or 'general'."
+            },
+            {
+              role: "user",
+              content: `Title: ${item.title}\nContent: ${item.contentSnippet || item.content}`
+            }
+          ],
+          model: "llama-3.1-70b-versatile",
+          response_format: { type: "json_object" }
+        });
+
+        const aiOutput = JSON.parse(completion.choices[0]?.message?.content || "{}");
+        
+        // 4. Determine Intent for CTA
+        let intent = "general";
+        const combinedText = (item.title + " " + (item.contentSnippet || "")).toLowerCase();
+        if (combinedText.includes("education") || combinedText.includes("study") || combinedText.includes("teacher") || combinedText.includes("school")) {
+          intent = "education";
+        } else if (combinedText.includes("code") || combinedText.includes("dev") || combinedText.includes("program") || combinedText.includes("engine")) {
+          intent = "coding";
+        }
+
+        const newsEntry = {
+          title_en: item.title,
+          title_ar: aiOutput.title_ar || item.title,
+          summary_en: aiOutput.summary_en || item.contentSnippet,
+          summary_ar: aiOutput.summary_ar || "",
+          source: item.creator || "Tech News",
+          source_link: item.link,
+          date: new Date().toISOString(),
+          tag: aiOutput.tag || "AI Update",
+          intent: intent,
+          score: 4.5 + Math.random() * 0.5
+        };
+
+        // 5. Store in Supabase
+        const { error: dbError } = await supabase.from("news").insert([newsEntry]);
+        
+        if (!dbError) {
+          processedNews.push(newsEntry);
+        }
+      } catch (aiError) {
+        console.error("Groq AI Error for item:", item.title, aiError);
+        // Fallback or skip
+      }
+    }
+
+    // 6. Revalidate Cache
     revalidatePath("/[locale]/news", "page");
     revalidatePath("/[locale]", "page");
 
     return NextResponse.json({
       success: true,
-      count: processedNews.length,
-      data: processedNews
+      new_articles: processedNews.length,
+      status: "Synced to Supabase"
     });
   } catch (error) {
+    console.error("Sync Root Error:", error);
     return NextResponse.json({ success: false, error: "Sync failed" }, { status: 500 });
   }
 }

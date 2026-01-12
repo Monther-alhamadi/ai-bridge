@@ -16,6 +16,7 @@ interface NewsCardProps {
     score: number;
     link: string;
     tool_affiliate?: string;
+    intent?: "education" | "coding" | "general";
   };
   locale: "en" | "ar";
 }
@@ -70,8 +71,30 @@ export function NewsCard({ item, locale }: NewsCardProps) {
           </TrackedLink>
         </div>
 
-        {/* The Revenue Driver (Affiliate Link) */}
-        {item.tool_affiliate && (
+        {/* The Revenue Driver (Smart Cross-Conversion) */}
+        {item.intent === "education" ? (
+          <TrackedLink
+            href={`/${locale}/tools/teacher`}
+            name="Teacher OS Conversion"
+            context="news_cross_promo"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-lg hover:scale-[1.02] active:scale-95 transition-all group/btn"
+          >
+            <Zap className="h-4 w-4 fill-current group-hover:animate-pulse" />
+            {locale === "en" ? "Check Teacher Tools" : "استكشف أدوات المعلم"}
+            <ArrowRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${locale === 'ar' ? 'rotate-180' : ''}`} />
+          </TrackedLink>
+        ) : item.intent === "coding" ? (
+          <TrackedLink
+            href={`/${locale}/pricing`}
+            name="Coding Engine Waitlist"
+            context="news_cross_promo"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white shadow-lg hover:bg-indigo-700 transition-all hover:scale-[1.02]"
+          >
+            <Zap className="h-4 w-4 fill-current group-hover:animate-pulse" />
+            {locale === "en" ? "Developer Tools (Waitlist)" : "أدوات المبرمجين (قريباً)"}
+            <ArrowRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${locale === 'ar' ? 'rotate-180' : ''}`} />
+          </TrackedLink>
+        ) : item.tool_affiliate ? (
           <TrackedLink
             href={item.tool_affiliate}
             name={item.title[locale]}
@@ -83,7 +106,7 @@ export function NewsCard({ item, locale }: NewsCardProps) {
             {locale === "en" ? "Try This AI Product" : "جرب هذا المنتج الذكي"}
             <ArrowRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${locale === 'ar' ? 'rotate-180' : ''}`} />
           </TrackedLink>
-        )}
+        ) : null}
       </div>
     </div>
   );

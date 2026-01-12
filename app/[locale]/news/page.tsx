@@ -5,6 +5,7 @@ import { NewsCard } from "@/components/NewsCard";
 import { Newspaper, Zap, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/Badge";
 import type { Locale } from "@/config/i18n";
+import { supabase } from "@/lib/supabase";
 
 // ISR: Revalidate every hour
 export const revalidate = 3600;
@@ -15,67 +16,32 @@ interface PageProps {
   };
 }
 
-// This would fetch from your sync API or DB
 async function getNews() {
-  // Simulating fetching processed news
-  return [
-    {
-      id: "1",
-      title: { en: "OpenAI Launches o1 (Strawberry)", ar: "أوبن إي آي تطلق نموذج o1 (الفراولة)" },
-      summary: { 
-        en: "A revolutionary reasoning model that thinks before it speaks, solving PhD-level science problems.",
-        ar: "موديل تفكير ثوري يفكر قبل أن يجيب، مصمم لحل أعقد المسائل العلمية والبرمجية."
-      },
-      source: "OpenAI Blog",
-      date: new Date().toISOString(),
-      tag: "Technology",
-      score: 4.9,
-      link: "https://openai.com",
-      tool_affiliate: "https://openai.com"
-    },
-    {
-      id: "2",
-      title: { en: "Cursor AI editor hits $50M ARR", ar: "آداة Cursor AI لتخطي 50 مليون دولار مبيعات سنوية" },
-      summary: { 
-        en: "The AI-first code editor is revolutionizing how developers write code.",
-        ar: "محرر الأكواد الأول المعتمد على الذكاء الاصطناعي يغير قواعد اللعبة للمبرمجين."
-      },
-      source: "TechCrunch",
-      date: new Date().toISOString(),
-      tag: "Coding",
-      score: 4.8,
-      link: "https://techcrunch.com",
-      tool_affiliate: "https://cursor.com"
-    },
-    {
-      id: "3",
-      title: { en: "Flux.1: The Midjourney Rival?", ar: "Flux.1: هل هو منافس Midjourney الحقيقي؟" },
-      summary: { 
-        en: "Black Forest Labs releases a high-fidelity image gen model.",
-        ar: "إطلاق نموذح Flux.1 الذي يقدم دقة خيالية في الصور، منافساً قوياً لـ Midjourney."
-      },
-      source: "The Verge",
-      date: new Date().toISOString(),
-      tag: "Design",
-      score: 4.7,
-      link: "https://theverge.com",
-      tool_affiliate: "https://fal.ai"
-    },
-    {
-      id: "4",
-      title: { en: "Claude 3.5 Sonnet: The New King?", ar: "كلود 3.5 سونيت: هل هو الملك الجديد للموديلات؟" },
-      summary: { 
-        en: "Anthropic's newest model outperforms GPT-4o in coding and reasoning.",
-        ar: "موديل أنثروبيك الأحدث يتفوق على GPT-4o في البرمجة والتفكير المنطقي."
-      },
-      source: "Anthropic",
-      date: new Date().toISOString(),
-      tag: "Enterprise AI",
-      score: 5.0,
-      link: "https://anthropic.com",
-      tool_affiliate: "https://anthropic.com"
-    }
-  ];
+  try {
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .order("date", { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+
+    return (data || []).map((item: any) => ({
+      id: item.id.toString(),
+      title: { en: item.title_en, ar: item.title_ar },
+      summary: { en: item.summary_en, ar: item.summary_ar },
+      source: item.source,
+      date: item.date,
+      tag: item.tag,
+      score: item.score || 4.5,
+      link: item.source_link,
+      tool_affiliate: item.tool_affiliate,
+      intent: item.intent
+    }));
+  } catch (err) {
+    console.error("Supabase Fetch Error:", err);
+    return []; // Return empty array to avoid page crash, fallback logic
+  }
 }
 
 export function generateMetadata({ params }: PageProps) {
@@ -144,7 +110,7 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
            </div>
            
            {/* Regular Items */}
-           {news.slice(1).map((item) => (
+           {news.slice(1).map((item: any) => (
              <NewsCard key={item.id} item={item as any} locale={locale as any} />
            ))}
         </div>
