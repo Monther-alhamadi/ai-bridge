@@ -21,12 +21,19 @@ interface LandingPageProps {
   };
 }
 
+import { NewsPulse } from "@/components/NewsPulse";
+
 export default async function LandingPage({ params: { locale } }: LandingPageProps) {
   const dictionary = await getDictionary(locale);
 
 
   return (
     <div className="flex flex-col gap-20 pb-20">
+      {/* News Pulse (Live Ticker) */}
+      <div className="container pt-8 md:pt-12">
+        <NewsPulse locale={locale} />
+      </div>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-background pt-16 md:pt-24 lg:pt-32 text-center md:text-start">
         <div className="container relative z-10 flex flex-col items-center text-center">
