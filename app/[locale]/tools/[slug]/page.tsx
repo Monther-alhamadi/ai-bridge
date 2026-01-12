@@ -11,9 +11,14 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { StickyCTA } from "@/components/StickyCTA";
 import { SmartInsight } from "@/components/SmartInsight";
-import { TeacherTaskHub } from "@/components/TeacherTaskHub";
-import { ExamGenerator } from "@/components/ExamGenerator";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { TeacherModule } from "@/components/modules/TeacherModule";
 import { CheckCircle2, Sparkles } from "lucide-react";
+
+// Module Registry mapping slugs to their specialized components
+const MODULE_REGISTRY: Record<string, any> = {
+  teacher: TeacherModule,
+};
 
 
 interface PageProps {
@@ -28,16 +33,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const profession = professions.find((p) => p.slug === params.slug);
   if (!profession) return {};
 
-  const title = params.locale === "en" 
+  const locale = params.locale;
+  const title = profession.seoTitle?.[locale] || (params.locale === "en" 
     ? `AI Tools for ${profession.title.en} | ${siteConfig.name}`
-    : `أدوات الذكاء الاصطناعي لـ ${profession.title.ar} | ${siteConfig.name}`;
+    : `أدوات الذكاء الاصطناعي لـ ${profession.title.ar} | ${siteConfig.name}`);
+    
+  const description = profession.seoDescription?.[locale] || profession.description[locale];
 
   return {
     title,
-    description: profession.description[params.locale],
+    description,
     openGraph: {
       title,
-      description: profession.description[params.locale],
+      description,
       url: `${siteConfig.url}/${params.locale}/tools/${params.slug}`,
     },
   };
@@ -53,6 +61,15 @@ export default async function ProfessionToolPage({ params }: PageProps) {
   const locale = params.locale;
   const pageUrl = `${siteConfig.url}/${locale}/tools/${params.slug}`;
   const pageTitle = profession.title[locale];
+  const seoTitle = profession.seoTitle?.[locale] || (locale === "en" ? `AI Tools for ${pageTitle}` : `أدوات الذكاء الاصطناعي لـ ${pageTitle}`);
+
+  const ProfessionModule = MODULE_REGISTRY[params.slug];
+
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { label: locale === "en" ? "Tools" : "الأدوات", href: `/${locale}` },
+    { label: pageTitle, href: `/${locale}/tools/${params.slug}` }
+  ];
 
   // JSON-LD Schema
   const schemas: any[] = [
@@ -130,14 +147,16 @@ export default async function ProfessionToolPage({ params }: PageProps) {
 
 
       <div className="mx-auto max-w-4xl space-y-12">
+        {/* Breadcrumbs for SEO & UX */}
+        <Breadcrumbs items={breadcrumbItems} locale={locale} />
         {/* Ad Slot (Top) */}
         <AdSlot position="top" />
 
         {/* Header Section */}
         <div className="space-y-4 text-center md:text-start">
-          <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-balance">
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {locale === "en" ? `AI Tools for ${pageTitle}` : `أدوات الذكاء الاصطناعي لـ ${pageTitle}`}
+              {seoTitle}
             </span>
           </h1>
           <p className="text-lg text-muted-foreground md:text-xl">
@@ -163,12 +182,11 @@ export default async function ProfessionToolPage({ params }: PageProps) {
           locale={locale} 
         />
 
-        {/* TEACHER OS: Specialized Dashboard (Phase 10) */}
-        {params.slug === "teacher" && (
-          <section className="space-y-12 animate-in fade-in slide-in-from-bottom-8">
-            <TeacherTaskHub locale={locale} />
-            <ExamGenerator locale={locale} />
-          </section>
+        {/* Profession-Specific Specialized Module (Phase 12 Modular Architecture) */}
+        {ProfessionModule && (
+          <div className="py-8">
+            <ProfessionModule locale={locale} />
+          </div>
         )}
 
         {/* Newsletter Funnel (Lead Magnet) */}

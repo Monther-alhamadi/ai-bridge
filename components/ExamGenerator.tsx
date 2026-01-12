@@ -16,9 +16,25 @@ export function ExamGenerator({ locale }: ExamGeneratorProps) {
   const [mcqCount, setMcqCount] = useState(5);
   const [essayCount, setEssayCount] = useState(2);
   const [includeAnswerKey, setIncludeAnswerKey] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<"classic" | "modern" | "fun">("classic");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedExam, setGeneratedExam] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showExitIntent, setShowExitIntent] = useState(false);
+
+  // Exit Intent Logic
+  useState(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0 && generatedExam && !showPaywall && !showExitIntent) {
+        setShowExitIntent(true);
+        trackEvent("outcome_view", { item_name: "exit_intent_popup", context: "exam_engine" });
+      }
+    };
+    if (typeof window !== 'undefined') {
+       document.addEventListener("mouseleave", handleMouseLeave);
+       return () => document.removeEventListener("mouseleave", handleMouseLeave);
+    }
+  });
 
   const handleGenerate = () => {
     if (!topic) return;
@@ -49,8 +65,14 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
     setShowPaywall(true);
   };
 
+  const templates = {
+    classic: "font-serif text-black",
+    modern: "font-sans text-slate-800",
+    fun: "font-rounded text-indigo-900 comic-sans"
+  };
+
   return (
-    <div id="exam-engine" className="rounded-3xl border bg-card shadow-xl overflow-hidden scroll-mt-24">
+    <div id="exam-engine" className="rounded-3xl border bg-card shadow-xl overflow-hidden scroll-mt-24 relative">
       <div className="bg-primary/5 p-6 border-b flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary rounded-lg text-primary-foreground">
@@ -80,6 +102,25 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
               placeholder={locale === "en" ? "Paste text or type topic..." : "الصق النص أو اكتب الموضوع..."}
               className="w-full rounded-xl border bg-background p-3 focus:ring-2 ring-primary/20 min-h-[100px]"
             />
+          </div>
+
+          {/* Template Selector */}
+          <div className="space-y-3">
+            <label className="text-sm font-bold">{locale === "en" ? "Exam Template" : "قالب الاختبار"}</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["classic", "modern", "fun"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedTemplate(t)}
+                  className={cn(
+                    "text-xs font-bold py-2 rounded-lg border transition-all",
+                    selectedTemplate === t ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted"
+                  )}
+                >
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -122,19 +163,6 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
              </div>
           </div>
 
-          <div className="flex items-center justify-between p-3 rounded-xl border bg-background">
-            <div className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-amber-500" />
-              <span className="text-sm font-bold">{locale === "en" ? "Answer Key" : "مفتاح الإجابة"}</span>
-            </div>
-            <input 
-              type="checkbox" 
-              checked={includeAnswerKey}
-              onChange={(e) => setIncludeAnswerKey(e.target.checked)}
-              className="h-5 w-5 accent-primary rounded cursor-pointer"
-            />
-          </div>
-
           <button
             onClick={handleGenerate}
             disabled={!topic || isGenerating}
@@ -149,15 +177,22 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
         </div>
 
         {/* Live Preview (Right Panel) */}
-        <div className="md:col-span-8 p-8 bg-background relative min-h-[500px]">
+        <div className="md:col-span-8 p-8 bg-background relative min-h-[500px] flex flex-col">
           <div className="absolute top-4 right-4 flex gap-2">
-             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-bold shadow-sm">
                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                Live Preview
              </div>
           </div>
 
-          <div className="prose prose-sm max-w-none mt-8 p-8 border rounded-xl shadow-sm bg-white min-h-[400px]">
+          <div className={cn("prose prose-sm max-w-none mt-8 p-8 border rounded-xl shadow-sm bg-white min-h-[400px] relative overflow-hidden transition-all", templates[selectedTemplate])}>
+            {generatedExam && (
+               /* Watermark */
+               <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none select-none opacity-[0.03] rotate-45">
+                  <div className="text-6xl font-black uppercase text-black whitespace-nowrap">Preview Version • Subscribe</div>
+               </div>
+            )}
+            
             {!generatedExam ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-4 opacity-50 mt-20">
                 <FileText className="h-16 w-16" />
@@ -170,7 +205,7 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
                 </div>
               </div>
             ) : (
-              <pre className="whitespace-pre-wrap font-serif text-base">{generatedExam}</pre>
+              <pre className={cn("whitespace-pre-wrap relative z-10 font-inherit", templates[selectedTemplate])}>{generatedExam}</pre>
             )}
           </div>
           
@@ -194,31 +229,52 @@ ${includeAnswerKey ? `\n[ANSWER KEY - PRO FEATURE]\n1. A\n2. C...` : ""}
           )}
 
           {/* Paywall Overlay */}
-          {showPaywall && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in">
-              <div className="bg-card w-full max-w-md p-8 rounded-3xl border shadow-2xl space-y-6 text-center">
-                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                  <Lock className="h-8 w-8" />
+          {(showPaywall || showExitIntent) && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+              <div className="bg-card w-full max-w-md p-8 rounded-3xl border shadow-2xl space-y-6 text-center transform transition-all animate-in zoom-in-95">
+                <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 animate-bounce">
+                  {showExitIntent ? <AlertCircle className="h-8 w-8" /> : <Lock className="h-8 w-8" />}
                 </div>
-                <h3 className="text-2xl font-black">
-                  {locale === "en" ? "Unlock Professional Export" : "افتح ميزة التصدير الاحترافي"}
+                
+                <h3 className="text-2xl font-black leading-tight">
+                  {showExitIntent 
+                    ? (locale === "en" ? "Wait! Don't delete your work!" : "انتظر! لا تحذف عملك!") 
+                    : (locale === "en" ? "Unlock Professional Export" : "افتح ميزة التصدير الاحترافي")}
                 </h3>
-                <p className="text-muted-foreground">
-                  {locale === "en" 
-                    ? "You just saved ~2 hours of work! Get this exam in Word format with your school logo + Answer Key." 
-                    : "لقد وفرت حوالي ساعتين من العمل! احصل على الاختبار بصيغة Word مع شعار مدرستك + مفتاح الإجابة."}
+                
+                <p className="text-muted-foreground text-lg">
+                  {showExitIntent 
+                    ? (locale === "en" ? "Your exam is 90% ready. Leaving now will lose this draft forever." : "اختبارك جاهز بنسبة 90%. الخروج الآن يعني فقدان هذه المسودة للأبد.")
+                    : (locale === "en" ? "You saved ~2 hours! Get this exam in Word format with your logo + Answer Key." : "لقد وفرت ساعتين! احصل على الاختبار بصيغة Word مع الشعار ومفتاح الإجابة.")}
                 </p>
+
+                <div className="bg-muted/50 p-4 rounded-xl text-start space-y-2">
+                   <div className="flex items-center gap-2 text-sm">
+                     <CheckCircle2 className="h-4 w-4 text-green-500" />
+                     <span className="font-bold">{locale === "en" ? "Remove Watermark" : "إزالة العلامة المائية"}</span>
+                   </div>
+                   <div className="flex items-center gap-2 text-sm">
+                     <CheckCircle2 className="h-4 w-4 text-green-500" />
+                     <span className="font-bold">{locale === "en" ? "Download as Word/PDF" : "تحميل بصيغة Word/PDF"}</span>
+                   </div>
+                   <div className="flex items-center gap-2 text-sm">
+                     <CheckCircle2 className="h-4 w-4 text-green-500" />
+                     <span className="font-bold">{locale === "en" ? "Full Answer Key" : "مفتاح الإجابة الكامل"}</span>
+                   </div>
+                </div>
+
                 <Link 
                   href={`/${locale}/pricing`}
                   className="block w-full rounded-xl bg-primary py-4 font-bold text-primary-foreground shadow-lg hover:scale-[1.02] transition-transform"
                 >
-                  {locale === "en" ? "Upgrade Now" : "رقي حسابك الآن"}
+                  {locale === "en" ? "Save My Exam ($9/mo)" : "حفظ اختباري ($9/شهر)"}
                 </Link>
+                
                 <button 
-                  onClick={() => setShowPaywall(false)}
+                  onClick={() => { setShowPaywall(false); setShowExitIntent(false); }}
                   className="text-sm text-muted-foreground hover:underline"
                 >
-                  {locale === "en" ? "Keep editing" : "تعديل المراجعة"}
+                  {locale === "en" ? "I'll start over later" : "سأبدأ من جديد لاحقاً"}
                 </button>
               </div>
             </div>

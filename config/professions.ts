@@ -26,7 +26,9 @@ export interface Profession {
   benefits: { en: string[]; ar: string[]; };
   faqs: FAQ[];
   recommendedTools: ToolReview[];
-  smartAnalysis: { en: string; ar: string; }; // Unique AI-gen description for SEO
+  smartAnalysis: { en: string; ar: string; }; 
+  seoTitle?: { en: string; ar: string; };      // NEW: For <title> tag
+  seoDescription?: { en: string; ar: string; }; // NEW: For <meta name="description">
 }
 
 
@@ -70,6 +72,14 @@ export const professions: Profession[] = [
     smartAnalysis: {
       en: "AI is revolutionizing education by acting as a 24/7 teaching assistant. For teachers, the biggest gain is specialized content creation—shifting from generic lesson plans to personalized learning paths that target individual student needs without increasing the workload.",
       ar: "يُغير الذكاء الاصطناعي وجه التعليم من خلال عمله كمساعد تدريس على مدار الساعة. بالنسبة للمعلمين، العائد الأكبر هو 'تخصيص المحتوى'، حيث ينتقل المعلم من الخطط العامة إلى مسارات تعلم فردية تستهدف احتياجات كل طالب دون زيادة في أعباء العمل."
+    },
+    seoTitle: {
+      en: "Free AI Lesson Planner & Exam Generator for Teachers | AI Bridge",
+      ar: "أداة تحضير الدروس وتوليد الاختبارات بالذكاء الاصطناعي مجاناً | AI Bridge"
+    },
+    seoDescription: {
+      en: "The ultimate AI assistant for teachers. Generate lesson plans, create quizzes, and automate grading in seconds. Try the Teacher OS for free.",
+      ar: "المساعد الذكي الأول للمعلمين العرب. حضر دروسك، صمم اختباراتك، واحصل على أدوات إدارة الصف مجاناً باستخدام الذكاء الاصطناعي."
     }
   },
   {
@@ -111,6 +121,14 @@ export const professions: Profession[] = [
     smartAnalysis: {
       en: "In the attention economy, AI is the ultimate multiplier for content creators. Beyond simple automation, it enables high-speed iteration: testing multiple hooks, scripts, and formats in the time it used to take to write a single post, directly impacting engagement metrics.",
       ar: "في اقتصاد الانتباه، يعد الذكاء الاصطناعي العامل المضاعف الأقوى لصناع المحتوى. فبعيداً عن الأتمتة البسيطة، يتيح الذكاء الاصطناعي 'التكرار السريع': تجربة عدة جمل افتتاحية، سيناريوهات، وتنسيقات في نفس الوقت الذي كان يستغرقه كتابة منشور واحد، مما يؤثر مباشرة على مقاييس التفاعل."
+    },
+    seoTitle: {
+      en: "AI Viral Script Generator & Video Hooks | For Content Creators",
+      ar: "مولد سيناريوهات الفيديو والعناوين الفيروسية بالذكاء الاصطناعي"
+    },
+    seoDescription: {
+      en: "Stop staring at a blank page. Generate viral YouTube, TikTok, and Instagram scripts in seconds with AI Bridge. Free for creators.",
+      ar: "توقف عن التحديق في الورقة البيضاء. ولد سيناريوهات يوتيوب وتيك توك فيروسية في ثوانٍ مع AI Bridge."
     }
   },
   {
@@ -152,6 +170,14 @@ export const professions: Profession[] = [
     smartAnalysis: {
       en: "Small business owners often face the 'blank page' problem in marketing. AI removes this friction by generating professional-grade copy and strategic insights instantly, allowing small teams to produce output that rivals major competitors with unlimited budgets.",
       ar: "غالباً ما يواجه أصحاب المشاريع الصغيرة 'مشكلة الصفحة البيضاء' في التسويق. يزيل الذكاء الاصطناعي هذا العائق من خلال إنشاء نصوص تسويقية احترافية ورؤى استراتيجية فورية، مما يسمح للفرق الصغيرة بإنتاج مخرجات تضاهي كبار المنافسين ذوي الميزانيات الضخمة."
+    },
+    seoTitle: {
+      en: "AI Marketing Suite for Small Businesses | Emails & Ads Generator",
+      ar: "منصة التسويق بالذكاء الاصطناعي لأصحاب المشاريع | إعلانات ورسائل جاهزة"
+    },
+    seoDescription: {
+      en: "Scale your business with AI. Generate professional email campaigns, ad copy, and social media posts without hiring an agency.",
+      ar: "كبر مشروعك باستخدام الذكاء الاصطناعي. ولد حملات بريدية ونصوص إعلانية احترافية دون الحاجة لتوظيف وكالة تسويق."
     }
   },
   {
