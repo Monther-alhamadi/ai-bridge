@@ -1,3 +1,4 @@
+// Version: 1.0.1 - Force build with require fix
 import { NextRequest, NextResponse } from "next/server";
 import { PROMPT_FACTORY, ToolPromptParams } from "@/config/prompts";
 import { getPrompt, AI_ENGINES, EngineContext } from "@/config/ai-engines";
