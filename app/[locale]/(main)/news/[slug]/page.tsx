@@ -3,7 +3,7 @@ import type { Locale } from "@/config/i18n";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
-import { Share2, Clock, User, Calendar } from "lucide-react";
+import { Share2, Clock, User, Calendar, Sparkles } from "lucide-react";
 import { ShareButtons } from "@/components/ShareButtons";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { AffiliateCard } from "@/components/AffiliateCard";

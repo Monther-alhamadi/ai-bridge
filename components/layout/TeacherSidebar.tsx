@@ -19,6 +19,7 @@ import {
 import { useActiveLesson } from "@/lib/hooks/use-active-lesson";
 import { useBackup } from "@/lib/hooks/use-backup";
 import { toast } from "react-hot-toast";
+import { AffiliateCard } from "@/components/AffiliateCard";
 
 interface SidebarProps {
   locale: "en" | "ar";
