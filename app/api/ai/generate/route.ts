@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PROMPT_FACTORY, ToolPromptParams } from "@/config/prompts";
 import { getPrompt, AI_ENGINES, EngineContext } from "@/config/ai-engines";
 import Groq from "groq-sdk";
-import pdf from "pdf-parse";
+import pdf from "pdf-parse/lib/pdf-parse.js";
 
 // Initialize Groq Client
 const groq = process.env.GROQ_API_KEY
