@@ -151,6 +151,11 @@ export function TeacherSidebar({ locale }: SidebarProps) {
             ))}
         </div>
 
+        {/* Tool Recommendation Card */}
+        <div className="px-4 py-4">
+           <AffiliateCard toolId="gamma" locale={locale} variant="compact" className="bg-slate-800/50 border-slate-700/50" />
+        </div>
+
         {/* Footer */}
         <div className="p-4 border-t border-slate-800 space-y-2">
             

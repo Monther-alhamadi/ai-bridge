@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Share2, Clock, User, Calendar } from "lucide-react";
 import { ShareButtons } from "@/components/ShareButtons";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { AffiliateCard } from "@/components/AffiliateCard";
 import { articles } from "@/lib/articles";
 
 // Use imported articles
@@ -176,6 +177,27 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Structured Affiliate Products */}
+            {article.affiliateProducts && article.affiliateProducts.length > 0 && (
+              <div className="mt-16 space-y-8">
+                <h3 className="text-2xl font-black flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                  {locale === 'ar' ? 'أدوات موصى بها' : 'Recommended Tools'}
+                </h3>
+                <div className="grid gap-6">
+                  {article.affiliateProducts.map((product) => {
+                    // We need the tool ID. In lib/articles.ts, we used names like "Gamma App".
+                    // AffiliateManager uses IDs like "gamma". 
+                    // Let's assume the name is close enough or use the URL to find it, 
+                    // or better, update lib/articles.ts to include IDs if needed.
+                    // For now, let's try to match by lowercase name or just pass a hardcoded ID if we can't find it.
+                    const toolId = product.name.toLowerCase().split(' ')[0]; 
+                    return <AffiliateCard key={product.name} toolId={toolId} locale={locale} />;
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Newsletter CTA - Lead Magnet */}
             <div className="mt-16" id="newsletter">

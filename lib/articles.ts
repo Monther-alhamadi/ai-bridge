@@ -1,5 +1,33 @@
-// Article content with full HTML, CTAs, and affiliate tracking
-export const articles: Record<string, any> = {
+// Article types and content with full HTML, CTAs, and affiliate tracking
+
+export type AffiliateProduct = {
+  name: string;
+  url: string;
+  discountCode?: string;
+  description: { en: string; ar: string };
+  priority: number;
+};
+
+export type Article = {
+  id?: string;
+  slug: string;
+  title: { en: string; ar: string };
+  description: { en: string; ar: string };
+  excerpt: { en: string; ar: string };
+  author: string;
+  date?: string;
+  publishedAt: string;
+  updatedAt: string;
+  readingTime: number;
+  category: { en: string; ar: string };
+  tags: string[];
+  image: string;
+  content: { en: string; ar: string };
+  affiliateProducts: AffiliateProduct[];
+  seoKeywords: string[];
+};
+
+export const articles: Record<string, Article> = {
   "how-ai-bridge-saves-teachers-10-hours-weekly": {
     slug: "how-ai-bridge-saves-teachers-10-hours-weekly",
     title: {
@@ -21,6 +49,37 @@ export const articles: Record<string, any> = {
     category: { en: "Productivity", ar: "الإنتاجية" },
     tags: ["AI Tools", "Teacher Productivity", "Lesson Planning", "EdTech"],
     image: "/hero-teacher-productivity.jpg",
+    seoKeywords: ["AI for teachers", "lesson planning automation", "educational productivity", "AI Bridge Teacher OS", "الذكاء الاصطناعي للمعلمين", "أتمتة تحضير الدروس"],
+    affiliateProducts: [
+      {
+        name: "Quizizz",
+        url: "https://quizizz.com",
+        description: { 
+          en: "Gamify your assessments with interactive quizzes.", 
+          ar: "حول تقييماتك إلى ألعاب تفاعلية ممتعة." 
+        },
+        priority: 1
+      },
+      {
+        name: "Gamma App",
+        url: "https://gamma.app/",
+        discountCode: "TEACHAI20",
+        description: { 
+          en: "Create stunning presentations from text in seconds.", 
+          ar: "أنشئ عروضاً تقديمية مذهلة من النصوص في ثوانٍ." 
+        },
+        priority: 2
+      },
+      {
+        name: "Notion",
+        url: "https://notion.so/",
+        description: { 
+          en: "The all-in-one workspace for your notes and tasks.", 
+          ar: "مساحة عمل متكاملة للملاحظات والمهام." 
+        },
+        priority: 2
+      }
+    ],
     
     content: {
       en: `
@@ -325,7 +384,39 @@ if (typeof window !== 'undefined' && window.trackEvent) {
       ar: 'دليل النخبة لأدوات ستوفر عليك ساعات من التخطيط والتصميم.',
       en: 'The elite guide to AI tools that save you hours of planning and design.'
     },
+    author: "AI Bridge Editorial Team",
+    tags: ["AI Tools", "Teacher Resources", "Gamma", "Notion", "Canva"],
     readingTime: 5,
+    seoKeywords: ["top AI tools 2026", "teacher AI guide", "Gamma for teachers", "Notion for education", "أدوات الذكاء الاصطناعي للمعلمين", "نوتشن للمعلمين", "جاما للعروض"],
+    affiliateProducts: [
+      {
+        name: "Gamma",
+        url: "https://gamma.app/",
+        description: { 
+          en: "Artificial intelligence for stunning presentations.", 
+          ar: "ذكاء اصطناعي لإنشاء عروض تقديمية مذهلة." 
+        },
+        priority: 1
+      },
+      {
+        name: "Notion",
+        url: "https://www.notion.so/",
+        description: { 
+          en: "Organize your academic life with power.", 
+          ar: "نظم حياتك الأكاديمية بقوة واحترافية." 
+        },
+        priority: 1
+      },
+      {
+        name: "Canva",
+        url: "https://www.canva.com/education/",
+        description: { 
+          en: "Visual design for educators.", 
+          ar: "التصميم البصري للمعلمين." 
+        },
+        priority: 2
+      }
+    ],
     content: {
       ar: `
         <article class="prose lg:prose-xl dark:prose-invert">
