@@ -6,6 +6,10 @@ import { Newspaper, Zap, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/Badge";
 import type { Locale } from "@/config/i18n";
 import { supabase } from "@/lib/supabase";
+import { articles } from "@/lib/articles";
+import Link from "next/link";
+import Image from "next/image";
+import { NewsletterForm } from "@/components/NewsletterForm";
 
 // ISR: Revalidate every hour
 export const revalidate = 3600;
@@ -84,28 +88,88 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
 
       <div className="mx-auto max-w-6xl space-y-12">
         {/* Header */}
-        <div className="space-y-4 text-center">
-          <div className="flex justify-center">
-            <Badge variant="outline" className="px-4 py-1 border-primary/20 text-primary gap-2 bg-primary/5">
-              <Zap className="h-3 w-3 fill-current" />
-              {locale === "en" ? "AI Pulse - Updated Hourly" : "نبض الذكاء - تحديث كل ساعة"}
-            </Badge>
+        <header className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Zap className="h-8 w-8 text-primary animate-pulse" />
+            <h1 className="text-4xl font-extrabold md:text-5xl">
+              {locale === "en" ? "AI News Room" : "غرفة أخبار الذكاء الاصطناعي"}
+            </h1>
           </div>
-          <h1 className="text-4xl font-black md:text-5xl lg:text-7xl">
-            {locale === "en" ? "The AI " : ""}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {locale === "en" ? "Newsroom" : "غرفة أخبار الذكاء"}
-            </span>
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground md:text-xl">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {locale === "en" 
-              ? "Automated AI summaries from 50+ tech sources, translated and analyzed for the strategic mind."
-              : "ملخصات ذكية مؤتمتة من أكثر من 50 مصدراً تقنياً، مترجمة ومحللة للعقول الاستراتيجية."}
+              ? "Daily AI summaries, tool updates, and insights to keep you ahead." 
+              : "ملخصات يومية، تحديثات الأدوات، ورؤى لتبقى في المقدمة."}
           </p>
-        </div>
+        </header>
 
-        {/* Ad Slot */}
         <AdSlot position="top" />
+
+        {/* Featured Articles Section */}
+        <section className="space-y-8">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <h2 className="text-2xl font-black flex items-center gap-2">
+              <TrendingUp className="w-6 h-6 text-primary" />
+              {locale === "en" ? "Featured Articles" : "مقالات مميزة"}
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Object.values(articles).map((article: any) => (
+              <Link 
+                key={article.slug}
+                href={`/${locale}/news/${article.slug}`}
+                className="group block"
+              >
+                <article className="h-full bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-primary/50 transition-all duration-300 hover:-translate-y-1">
+                  <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
+                    <Image
+                      src={article.image}
+                      alt={article.title[locale]}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      unoptimized
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="default" className="bg-primary/90 text-white font-bold">
+                        {article.category[locale]}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-3">
+                    <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                      {article.title[locale]}
+                    </h3>
+                    <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
+                      {article.excerpt[locale]}
+                    </p>
+
+                    <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
+                      <span className="flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        {article.readingTime} {locale === "ar" ? "دقيقة" : "min"}
+                      </span>
+                      <span>{new Date(article.publishedAt).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div className="my-16 border-t-2 border-dashed border-slate-200" />
+
+        {/* Latest AI News Section */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <h2 className="text-2xl font-black flex items-center gap-2">
+              <Newspaper className="w-6 h-6 text-primary" />
+               {locale === "en" ? "Latest AI News" : "آخر أخبار الذكاء الاصطناعي"}
+            </h2>
+          </div>
+        </section>
 
         {/* Bento Grid */}
         {news.length > 0 ? (
@@ -132,21 +196,9 @@ export default async function NewsPage({ params: { locale } }: PageProps) {
         {/* Ad Slot Middle */}
         <AdSlot position="middle" />
 
-        {/* Newsletter Funnel */}
-        <div className="rounded-3xl bg-primary p-8 md:p-12 text-primary-foreground text-center space-y-6 relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32 rounded-full" />
-           <TrendingUp className="h-12 w-12 mx-auto opacity-50" />
-           <h2 className="text-3xl font-black md:text-4xl">
-             {locale === "en" ? "Stay Ahead of the Curve" : "كن دائماً في المقدمة"}
-           </h2>
-           <p className="text-primary-foreground/80 max-w-md mx-auto">
-             {locale === "en" ? "Get our 'Elite AI Digest' every Sunday. High-signal, zero-noise." : "احصل على ملخص النخبة الأسبوعي كل أحد. محتوى عالي القيمة، بعيداً عن ضجيج المنصات."}
-           </p>
-           <div className="flex flex-col sm:flex-row justify-center gap-3">
-              <button className="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-all">
-                 {locale === "en" ? "Subscribe Now" : "اشترك مجاناً"}
-              </button>
-           </div>
+        {/* Newsletter Lead Magnet - 50 Prompts Guide */}
+        <div className="my-12">
+          <NewsletterForm locale={locale} />
         </div>
 
       </div>

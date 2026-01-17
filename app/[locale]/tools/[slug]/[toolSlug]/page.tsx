@@ -2,15 +2,21 @@ import { notFound } from "next/navigation";
 import { professions } from "@/config/professions";
 import type { Locale } from "@/config/i18n";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { ExamGenerator } from "@/components/ExamGenerator";
+import { ExamEngine } from "@/components/modules/teacher/ExamEngine";
+import { LessonPlanner } from "@/components/modules/teacher/LessonPlanner";
+import { EducationalConsultant } from "@/components/modules/teacher/EducationalConsultant";
 import { ModularParametricTool } from "@/components/ModularParametricTool";
 import { AdSlot } from "@/components/AdSlot";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
+import { CurriculumArchitect } from "@/components/modules/teacher/CurriculumArchitect";
+
 // Component Registry for Tool Modules
 const TOOL_COMPONENTS: Record<string, any> = {
-  "exam-generator": ExamGenerator,
-  "lesson-planner": ModularParametricTool,
+  "exam-generator": ExamEngine,
+  "lesson-planner": LessonPlanner,
+  "educational-consultant": EducationalConsultant,
+  "curriculum-architect": CurriculumArchitect,
   "career-assistant": ModularParametricTool,
   "smart-consultant": ModularParametricTool,
   "script-writer": ModularParametricTool,

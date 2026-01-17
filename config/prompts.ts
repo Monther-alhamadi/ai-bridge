@@ -5,50 +5,77 @@ export type ToolPromptParams = {
   mcqCount?: number;
   essayCount?: number;
   trueFalseCount?: number;
+  fillBlanksCount?: number;
+  matchingCount?: number;
   level?: string;
   context?: string;
   language: "en" | "ar";
+  taskType?: string; // e.g., 'letter', 'behavior', 'project'
+  tone?: string; // e.g., 'formal', 'friendly', 'firm'
+  // Lesson Planner specific
+  subject?: string;
+  grade?: string;
+  objectives?: string;
+  strategies?: string[];
+  duration?: string;
+  // Printing / Branding
+  schoolName?: string;
+  teacherName?: string;
+  logoAttached?: boolean;
+
+  [key: string]: any; // Index signature for dynamic tool parameters
 };
 
 export const PROMPT_FACTORY = {
   teacher: {
     "exam-generator": (params: ToolPromptParams) => {
-      const { topic, difficulty, mcqCount, essayCount, trueFalseCount, language, context } = params;
+      const { topic, difficulty, mcqCount, essayCount, trueFalseCount, fillBlanksCount, matchingCount, language, context } = params;
       return language === "ar" 
         ? `أنت خبير تربوي ومصمم اختبارات محترف. 
            المهمة: قم بإنشاء اختبار احترافي بناءً على المعايير التالية:
            - الموضوع/النص الأساسي: ${topic}
            - مستوى الصعوبة: ${difficulty}% (حيث 0 سهل و 100 صعب جداً)
-           - عدد أسئلة الاختيار من متعدد (MCQ): ${mcqCount}
-           - عدد أسئلة (صح/خطأ): ${trueFalseCount}
-           - عدد الأسئلة المقالية: ${essayCount}
+           - عدد أسئلة الاختيار من متعدد (MCQ): ${mcqCount || 0}
+           - عدد أسئلة (صح/خطأ): ${trueFalseCount || 0}
+           - عدد الأسئلة المقالية: ${essayCount || 0}
+           - عدد أسئلة (إكمال الفراغ): ${fillBlanksCount || 0}
+           - عدد أسئلة (التوصيل/المزاوجة): ${matchingCount || 0}
            - سياق إضافي من الملف المرفق: ${context || "لا يوجد"}
            
            شروط المخرجات:
-           1. التزم بدقة بالأعداد المطلوبة.
+           1. التزم بدقة بالأعداد المطلوبة. إذا كان العدد 0 لأي نوع، فلا تقم بإنشائه.
            2. نسق الاختبار بشكل جمالي ومنظم.
            3. أضف مفتاح الإجابات في النهاية بشكل منفصل.`
         : `Act as a professional educational consultant and assessment designer. 
            Task: Create a professional exam based on these parameters:
            - Topic/Source Text: ${topic}
            - Difficulty Level: ${difficulty}% (0 is easy, 100 is very hard)
-           - MCQ Question Count: ${mcqCount}
-           - True/False Question Count: ${trueFalseCount}
-           - Essay Question Count: ${essayCount}
+           - MCQ Question Count: ${mcqCount || 0}
+           - True/False Question Count: ${trueFalseCount || 0}
+           - Essay Question Count: ${essayCount || 0}
+           - Fill in the Blanks Count: ${fillBlanksCount || 0}
+           - Matching Questions Count: ${matchingCount || 0}
            - Context from uploaded file: ${context || "None"}
            
            Output requirements:
-           1. Strictly adhere to the requested question counts.
+           1. Strictly adhere to the requested question counts. If a count is 0, do not include that section.
            2. Format the exam beautifully and professionally.
            3. Include a separate answer key at the end.`;
     },
     "lesson-planner": (params: ToolPromptParams) => {
-        const { topic, level, language } = params;
+        const { subject, grade, objectives, strategies, duration, language } = params;
+        const strategiesList = strategies ? strategies.join(', ') : '';
         return language === "ar"
-          ? `أنت مستشار تعليمي أول. قم بإعداد خطة درس شاملة لموضوع: ${topic} للمستوى: ${level}. 
-             يجب أن تشمل الخطة: الأهداف السلوكية، الوسائل التعليمية، سير الدرس الزمني (45 دقيقة)، وتقويم ختامي.`
-          : `Act as a Senior Educational Consultant. Create a comprehensive lesson plan for: ${topic} at level: ${level}. 
-             Include: Learning objectives, teaching aids, a 45-minute step-by-step timeline, and a final assessment.`;
+          ? `أنت مخطط دروس ذكي. أنشئ خطة درس للموضوع: ${subject} للصف: ${grade}.
+              أهداف التعلم: ${objectives}.
+              استراتيجيات التدريس: ${strategiesList}.
+              مدة الحصة: ${duration} دقيقة.
+              تشمل الخطة وسائل تعليمية، جدول زمني مفصل، وتقييم نهائي.`
+          : `You are a Smart Lesson Planner. Create a lesson plan for subject: ${subject}, grade: ${grade}.
+              Learning objectives: ${objectives}.
+              Teaching strategies: ${strategiesList}.
+              Duration: ${duration} minutes.
+              Include teaching aids, a detailed timeline, and a final assessment.`;
     },
     "career-assistant": (params: ToolPromptParams) => {
         const { topic, level, language } = params;
@@ -65,6 +92,14 @@ export const PROMPT_FACTORY = {
              حلل التحديات، اقترح حلولاً مبتكرة، وارسم خريطة طريق للتطوير.`
           : `Act as a Strategic Educational Development Consultant. Provide an in-depth consultation on: ${topic}. 
              Analyze challenges, suggest innovative solutions, and draft a development roadmap.`;
+    },
+    "educational-consultant": (params: ToolPromptParams) => {
+        const { taskType, tone, language } = params;
+        const taskDesc = taskType ? taskType : 'general assistance';
+        const toneDesc = tone ? tone : 'neutral';
+        return language === "ar"
+          ? `أنت مستشار تربوي خبير. مهمتك: ${taskDesc} بنبرة ${toneDesc}. قدم نصاً جاهزاً للنسخ أو الإرسال عبر البريد الإلكتروني.`
+          : `You are an expert Educational Consultant. Your task: ${taskDesc} with a ${toneDesc} tone. Provide ready-to-copy text for email or direct use.`;
     }
   },
   "content-creator": {

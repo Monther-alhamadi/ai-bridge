@@ -15,8 +15,10 @@ export function ExamGenerator({ locale }: ExamGeneratorProps) {
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState(50);
   const [mcqCount, setMcqCount] = useState(5);
-  const [essayCount, setEssayCount] = useState(2);
+  const [essayCount, setEssayCount] = useState(0);
   const [trueFalseCount, setTrueFalseCount] = useState(5);
+  const [fillBlanksCount, setFillBlanksCount] = useState(0);
+  const [matchingCount, setMatchingCount] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedExam, setGeneratedExam] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -44,6 +46,8 @@ export function ExamGenerator({ locale }: ExamGeneratorProps) {
         mcqCount,
         essayCount,
         trueFalseCount,
+        fillBlanksCount,
+        matchingCount,
         language: locale,
         context: fileName ? `Source: ${fileName}` : undefined
     });
@@ -147,7 +151,7 @@ ${Array.from({ length: essayCount }).map((_, i) => `${i + 1}. Discuss the impact
             {/* Counters */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                    <label className="text-xs font-black text-muted-foreground uppercase">MCQ Counts</label>
+                    <label className="text-xs font-black text-muted-foreground uppercase">{locale === 'ar' ? 'اختيار من متعدد' : 'MCQ Count'}</label>
                     <div className="flex items-center gap-2">
                         <button onClick={() => setMcqCount(Math.max(1, mcqCount - 1))} className="p-2 border rounded-lg hover:bg-muted"><Minus className="h-4 w-4" /></button>
                         <span className="flex-grow text-center font-bold border rounded-lg py-2">{mcqCount}</span>
@@ -155,11 +159,35 @@ ${Array.from({ length: essayCount }).map((_, i) => `${i + 1}. Discuss the impact
                     </div>
                 </div>
                 <div className="space-y-3">
-                    <label className="text-xs font-black text-muted-foreground uppercase">T/F Counts</label>
+                    <label className="text-xs font-black text-muted-foreground uppercase">{locale === 'ar' ? 'صح أو خطأ' : 'T/F Count'}</label>
                     <div className="flex items-center gap-2">
                         <button onClick={() => setTrueFalseCount(Math.max(0, trueFalseCount - 1))} className="p-2 border rounded-lg hover:bg-muted"><Minus className="h-4 w-4" /></button>
                         <span className="flex-grow text-center font-bold border rounded-lg py-2">{trueFalseCount}</span>
                         <button onClick={() => setTrueFalseCount(trueFalseCount + 1)} className="p-2 border rounded-lg hover:bg-muted"><Plus className="h-4 w-4" /></button>
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    <label className="text-xs font-black text-muted-foreground uppercase">{locale === 'ar' ? 'أسئلة مقالية' : 'Essay Count'}</label>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => setEssayCount(Math.max(0, essayCount - 1))} className="p-2 border rounded-lg hover:bg-muted"><Minus className="h-4 w-4" /></button>
+                        <span className="flex-grow text-center font-bold border rounded-lg py-2">{essayCount}</span>
+                        <button onClick={() => setEssayCount(essayCount + 1)} className="p-2 border rounded-lg hover:bg-muted"><Plus className="h-4 w-4" /></button>
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    <label className="text-xs font-black text-muted-foreground uppercase">{locale === 'ar' ? 'إكمال فراغ' : 'Fill Blanks'}</label>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => setFillBlanksCount(Math.max(0, fillBlanksCount - 1))} className="p-2 border rounded-lg hover:bg-muted"><Minus className="h-4 w-4" /></button>
+                        <span className="flex-grow text-center font-bold border rounded-lg py-2">{fillBlanksCount}</span>
+                        <button onClick={() => setFillBlanksCount(fillBlanksCount + 1)} className="p-2 border rounded-lg hover:bg-muted"><Plus className="h-4 w-4" /></button>
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    <label className="text-xs font-black text-muted-foreground uppercase">{locale === 'ar' ? 'توصيل / مزاوجة' : 'Matching'}</label>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => setMatchingCount(Math.max(0, matchingCount - 1))} className="p-2 border rounded-lg hover:bg-muted"><Minus className="h-4 w-4" /></button>
+                        <span className="flex-grow text-center font-bold border rounded-lg py-2">{matchingCount}</span>
+                        <button onClick={() => setMatchingCount(matchingCount + 1)} className="p-2 border rounded-lg hover:bg-muted"><Plus className="h-4 w-4" /></button>
                     </div>
                 </div>
             </div>

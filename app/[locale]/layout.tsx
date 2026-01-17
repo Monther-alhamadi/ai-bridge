@@ -33,9 +33,6 @@ interface RootLayoutProps {
   params: { locale: Locale };
 }
 
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-
 export default function RootLayout({ children, params }: RootLayoutProps) {
   const font = params.locale === "ar" ? cairo : inter;
   const dir = params.locale === "ar" ? "rtl" : "ltr";
@@ -61,11 +58,7 @@ export default function RootLayout({ children, params }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <Navbar locale={params.locale} />
-            <main className="flex-1">{children}</main>
-            <Footer locale={params.locale} />
-          </div>
+          {children}
         </ThemeProvider>
       </body>
     </html>
