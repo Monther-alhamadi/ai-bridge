@@ -58,6 +58,7 @@ export function ExamEngine({ locale, profession, toolSlug }: ExamEngineProps) {
     language: locale,
     schoolName: '',
     teacherName: '',
+    context: '',
   };
 
 
