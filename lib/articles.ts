@@ -313,6 +313,7 @@ if (typeof window !== 'undefined' && window.trackEvent) {
       en: 'Top 5 AI Tools for Teachers in 2026'
     },
     image: '/hero-elite-tools-guide.jpg',
+    date: '2026-01-16',
     publishedAt: '2026-01-16T10:00:00Z',
     updatedAt: '2026-01-16T10:00:00Z',
     category: { en: "Tools", ar: "الأدوات" },

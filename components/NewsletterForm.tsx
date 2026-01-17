@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Mail, ArrowRight, CheckCircle, Sparkles, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,7 @@ interface NewsletterFormProps {
 }
 
 export function NewsletterForm({ locale, className }: NewsletterFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -69,8 +71,10 @@ export function NewsletterForm({ locale, className }: NewsletterFormProps) {
         setStatus("success");
         setEmail("");
         
-        // Reset to idle after 5 seconds
-        setTimeout(() => setStatus("idle"), 5000);
+        // Redirect after a short delay for visual confirmation
+        setTimeout(() => {
+          router.push(`/${locale}/newsletter/success`);
+        }, 2000);
       } else {
         setStatus("error");
         setErrorMessage(t.error);
