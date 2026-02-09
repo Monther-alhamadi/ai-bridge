@@ -161,7 +161,7 @@ export default function ToolkitPage() {
 
           {/* Tools Grid */}
           <main>
-            <AnimatePresence mode="popLayout text-center">
+            <AnimatePresence mode="popLayout">
               <motion.div 
                 layout
                 className="grid md:grid-cols-2 gap-6"

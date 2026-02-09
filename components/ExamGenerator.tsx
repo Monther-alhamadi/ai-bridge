@@ -52,7 +52,7 @@ export function ExamGenerator({ locale }: ExamGeneratorProps) {
         context: fileName ? `Source: ${fileName}` : undefined
     });
 
-    console.log("SENDING TO AI:", engineeredPrompt);
+    // console.log("SENDING TO AI:", engineeredPrompt);
 
     // Simulate AI Generation
     setTimeout(() => {

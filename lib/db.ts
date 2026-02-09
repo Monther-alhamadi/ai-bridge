@@ -1,51 +1,63 @@
-import Dexie, { Table } from 'dexie';
+import Dexie, { type Table } from 'dexie';
 
-// Define types for our database tables
+// Type Aliases for backward/forward compatibility
+export type Subject = Textbook;
+export type LessonPlan = Lesson;
+
 export interface Textbook {
   id?: number;
   title: string;
-  author?: string;
-  grade?: string;
   subject?: string;
-  fullText: string; // The entire OCR extracted text
-  chapters: Chapter[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Chapter {
-  id: string; // UUID or simple index
-  title: string;
-  content: string;
-  pageStart: number;
-  pageEnd: number;
+  grade?: string;
+  bookFile?: File | Blob;
+  bookName?: string;
+  schedule?: number[]; // [0-6] for days of week (Sunday=0, Monday=1, etc.)
+  lessonsPerDay?: number;
+  semesterStart?: string; // ISO Date
+  semesterEnd?: string; // ISO Date
+  color?: string;
+  fullText?: string;
+  indexSummary?: string;
+  chapters?: any[];
+  updatedAt?: Date;
+  createdAt?: Date;
+  currentLesson?: number; // Phase 31: Curriculum Sync
+  contentLanguage?: 'en' | 'ar'; // Detected language of the uploaded textbook
 }
 
 export interface Lesson {
   id?: number;
-  textbookId?: number;
+  textbookId: number;
+  date: Date; // Keep as Date object for easier sorting in hooks
   title: string;
-  date: Date;
-  status: 'pending' | 'completed' | 'skipped';
-  weekNumber: number;
-  contentContext: string; // Extracted text segment relevant to this lesson
-  generatedPlan?: any; // JSON bloob of the lesson plan
-  createdAt: Date;
+  objectives?: string[]; // New
+  contentContext?: string; // Existing
+  status: 'planned' | 'completed' | 'skipped' | 'pending';
+  weekNumber?: number;
+  createdAt?: Date;
 }
 
-export class TeacherDatabase extends Dexie {
+export interface UserSettings {
+  id?: number;
+  key: string;
+  value: any;
+}
+
+export class TeacherOSDatabase extends Dexie {
   textbooks!: Table<Textbook>;
   lessons!: Table<Lesson>;
+  settings!: Table<UserSettings>;
 
   constructor() {
-    super('TeacherOS_DB');
-    
-    // Define schema
-    this.version(1).stores({
-      textbooks: '++id, title, subject, grade', // Primary key and indexed props
-      lessons: '++id, textbookId, date, status, weekNumber'
+    super('TeacherOSDB');
+    this.version(2).stores({
+      textbooks: '++id, title, grade',
+      lessons: '++id, textbookId, date, status',
+      settings: '++id, key'
+    }).upgrade(tx => {
+        // Handle migration if needed, but since we are in early dev we can just bump version
     });
   }
 }
 
-export const db = new TeacherDatabase();
+export const db = new TeacherOSDatabase();

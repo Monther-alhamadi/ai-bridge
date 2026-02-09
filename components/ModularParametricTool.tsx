@@ -52,7 +52,7 @@ export function ModularParametricTool({ locale, profession, toolSlug }: ModularP
         context: fileName ? `Source File: ${fileName}` : undefined
     });
 
-    console.log("PARAMETRIC REQUEST:", engineeredPrompt);
+    // console.log("PARAMETRIC REQUEST:", engineeredPrompt);
 
     // Simulate AI Generation
     setTimeout(() => {

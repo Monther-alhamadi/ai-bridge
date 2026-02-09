@@ -1,3 +1,4 @@
+import React from "react";
 import { notFound } from "next/navigation";
 import { professions } from "@/config/professions";
 import type { Locale } from "@/config/i18n";
@@ -57,7 +58,9 @@ export default function TeacherToolPage({ params }: ToolPageProps) {
 
        {/* Render Tool without Marketing wrappers */}
        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-1">
-            <ToolComponent locale={locale} profession={professionSlug} toolSlug={toolSlug} />
+            <React.Suspense fallback={<div className="p-12 text-center animate-pulse text-slate-400">Loading Tool Module...</div>}>
+                <ToolComponent locale={locale} profession={professionSlug} toolSlug={toolSlug} />
+            </React.Suspense>
        </div>
     </div>
   );

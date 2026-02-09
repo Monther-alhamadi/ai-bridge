@@ -18,7 +18,9 @@ interface EventParams {
 
 export const trackEvent = (name: EventName, params: EventParams) => {
   // 1. Log to Console (for debugging/local)
-  console.log(`[Analytics] Event: ${name}`, params);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Analytics] Event: ${name}`, params);
+  }
 
   // 2. Google Analytics 4 (Check if gtag exists)
   if (typeof window !== "undefined" && (window as any).gtag) {

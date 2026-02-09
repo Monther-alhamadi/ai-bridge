@@ -15,9 +15,8 @@ export type EngineContext = {
     // Exam Engine Specifics
     mcqCount?: number;
     essayCount?: number;
-    trueFalseCount?: number;
-    fillBlanksCount?: number;
     matchingCount?: number;
+    locale?: string;
     
     // Lesson Planner Specifics
     subject?: string;
@@ -50,63 +49,117 @@ const GENERIC_ENGINES = {
 // --- DEEP CONTEXT ENGINES (TEACHER OS) ---
 const TEACHER_ENGINES = {
     "exam-generator": (p: EngineContext) => {
-        const prompt = p.language === 'ar'
-            ? `الدور: خبير تقييم تربوي.
-               المهمة: بناء اختبار أكاديمي متكامل.
-               المصدر: ${p.context ? `استخدم النص التالي كمصدر وحيد للأسئلة: """${p.context}"""` : `الموضوع العام: ${p.topic}`}
-               
-               المواصفات الفنية:
-               - الصعوبة: ${p.difficulty}/5 (Bloom's Taxonomy)
-               - اختيار من متعدد: ${p.mcqCount || 0}
-               - صح/خطأ: ${p.trueFalseCount || 0}
-               - مقالي: ${p.essayCount || 0}
-               - إكمال فراغ: ${p.fillBlanksCount || 0}
-               - توصيل: ${p.matchingCount || 0}
-               
-               المخرجات المطلوبة:
-               JSON فقط يحتوي على مصفوفة 'questions' وكل سؤال له 'text', 'type', 'options' (للاختيار), 'answer'.`
-            : `Role: Educational Assessment Expert.
-               Task: Construct a comprehensive academic exam.
-               Source: ${p.context ? `Use the following text as the SOLE source: """${p.context}"""` : `General Topic: ${p.topic}`}
-               
-               Specs:
-               - Difficulty: ${p.difficulty}/5
-               - MCQs: ${p.mcqCount || 0}
-               - True/False: ${p.trueFalseCount || 0}
-               - Essay: ${p.essayCount || 0}
-               - Blanks: ${p.fillBlanksCount || 0}
-               - Matching: ${p.matchingCount || 0}
-               
-               Output:
-               Strict JSON with 'questions' array.`;
+        const isAr = p.language === 'ar' || p.locale === 'ar';
+        const prompt = isAr
+            ? `أنت خبير تقييم أكاديمي ومخطط مناهج محترف (Senior Assessment Designer).
+المهمة: بناء اختبار أكاديمي متكامل واحترافي.
+
+**قواعد العمل الصارمة (STRICT RULES):**
+1. **الالتزام بالعدد:** يجب توليد العدد المطلوب بالضبط لكل نوع. لا تزد ولا تنقص حبة واحدة.
+2. **التصنيف (Grouping):** يجب وضع كل نوع من الأسئلة في 'section' منفصل تماماً. 
+3. **المصدر:** ${p.context ? `حصرياً من هذا النص: """${p.context}"""` : `الموضوع العام: ${p.topic}`}
+
+**الأعداد المطلوبة (Mandatory Counts):**
+- اختيار من متعدد (MCQ): ${p.mcqCount || 0}
+- صح/خطأ: ${p.trueFalseCount || 0}
+- مقالي (Essay): ${p.essayCount || 0}
+- إكمال فراغ (Blanks): ${p.fillBlanksCount || 0}
+- توصيل (Matching): ${p.matchingCount || 0}
+
+**تنسيق البيانات لكل نوع:**
+- **التوصيل (Matching):** يجب أن يحتوي الكائن على 'matchingPairs' وهي مصفوفة من { sideA: "البند", sideB: "الإجابة المقابلة" }.
+- **إكمال الفراغ:** ضع شرائط (_) مكان الكلمة المفقودة في النص 'text'.
+
+**هيكل JSON (إلزامي):**
+{
+  "examTitle": "عنوان الاختبار",
+  "sections": [
+    {
+      "sectionTitle": "مثال: الجزء الأول: الاختيار من متعدد",
+      "instructions": "تعليمات الحل لهذا القسم...",
+      "questions": [
+        { "text": "السؤال", "type": "MCQ|True/False|Essay|Blanks|Matching", "options": ["اختيار1", "اختيار2"], "points": 1, "matchingPairs": [...] }
+      ]
+    }
+  ],
+  "markingScheme": { ... },
+  "taxonomyMatrix": { ... }
+}
+
+**تحذير:** إذا طلبت 0 من نوع معين، لا تقم بإنشاء قسم له إطلاقاً.`
+            : `Role: Senior Educational Assessment Specialist.
+Task: Construct a high-stakes professional academic exam.
+
+**STRICT ADHERENCE PROTOCOL:**
+1. **Zero Tolerance Counts:** You MUST generate EXACTLY the numbers requested below. No more, no less.
+2. **Strict Grouping:** Questions MUST be grouped into sections by type. Never mix MCQs with Essays.
+3. **Context focus:** ${p.context ? `PRIMARY SOURCE: """${p.context}"""` : `Topic: ${p.topic}`}
+
+**REQUIRED QUANTITIES:**
+- MCQs: ${p.mcqCount || 0}
+- True/False: ${p.trueFalseCount || 0}
+- Essay: ${p.essayCount || 0}
+- Fill-in-blanks: ${p.fillBlanksCount || 0}
+- Matching: ${p.matchingCount || 0}
+
+**DATA FORMATS:**
+- **Matching:** Include 'matchingPairs' array: [{ "sideA": "Term", "sideB": "Definition" }].
+- **Fill-in-blanks:** Use underscores (____) for missing words in the 'text' field.
+
+**MANDATORY JSON STRUCTURE:**
+{
+  "examTitle": "Exam Title",
+  "sections": [
+    {
+      "sectionTitle": "Section X: [Type Name]",
+      "instructions": "Specific instructions for this type...",
+      "questions": [
+        { "text": "Question Text", "type": "MCQ|True/False|Essay|Blanks|Matching", "options": [], "points": 1, "matchingPairs": [] }
+      ]
+    }
+  ],
+  "markingScheme": { "answers": [] },
+  "taxonomyMatrix": { "remember": 0, "understand": 0, ... }
+}
+
+**ERROR PREVENTION:** If a quantity is 0, OMIT that entire section from the output.`;
         return prompt;
     },
 
     "lesson-planner": (p: EngineContext) => {
-        return p.language === 'ar'
-            ? `الدور: مهندس مناهج ذكي.
-               المهمة: تصميم خطة درس تفصيلية.
-               ${p.context ? `السياق من الكتاب المدرسي: """${p.context}"""` : `الموضوع: ${p.subject}`}
-               
-               التفاصيل:
-               - الصف: ${p.grade}
-               - الزمن: ${p.duration} دقيقة
-               - الأهداف: ${p.objectives}
-               - الاستراتيجيات: ${p.strategies?.join(', ') || 'التعلم النشط'}
-               
-               المخرجات:
-               خطة بصيغة JSON تشمل: 'timeline' (مصفوفة أنشطة), 'resources', 'assessment', 'homework'.`
-            : `Role: Curriculum Architect.
-               Task: Design a detailed lesson plan.
-               ${p.context ? `Textbook Context: """${p.context}"""` : `Topic: ${p.subject}`}
-               
-               Details:
-               - Grade: ${p.grade}
-               - Duration: ${p.duration} min
-               - Objectives: ${p.objectives}
-               
-               Output:
-               JSON plan including 'timeline', 'resources', 'assessment'.`;
+        const isAr = p.language === 'ar' || p.locale === 'ar';
+        return isAr
+            ? `أنت خبير تربوي ومخطط مناهج معتمد.
+**اللغة:** يجب أن تكون كامل الإجابة باللغة العربية الفصحى الاحترافية.
+**المهمة:** تصميم خطة درس إبداعية للمادة: ${p.subject}، الصف: ${p.grade}.
+
+**استراتيجية العمل:**
+1. **المصدر الأساسي:** اعتمد كلياً على سياق الكتاب المدرسي المرفق: """${p.context || 'لا يوجد سياق متوفر'}"""
+2. **المصدر الإثرائي:** استخدم ذكاءك التربوي لإضافة أنشطة تفاعلية، استراتيجيات تعلم نشط، وربط الدرس بالواقع (AI Knowledge).
+3. **الهدف:** دمج دقة المنهج الدراسي مع ابتكار التكنولوجيا الحديثة.
+
+**المواصفات:**
+- الزمن الكلي: ${p.duration} دقيقة.
+- الأهداف: ${p.objectives}.
+- الاستراتيجيات: ${p.strategies?.join('، ') || 'التعلم النشط'}.
+
+**المخرجات (JSON فقط):**
+المفاتيح المطلوبة: 'title', 'topic', 'objectives', 'materialsNeeded', 'timeline', 'assessment'.`
+            : `Role: Senior Curriculum Architect.
+Language: English.
+Task: Design a creative lesson plan for ${p.subject}, Grade: ${p.grade}.
+
+Strategy:
+1. Primary Source: Use the provided textbook context: """${p.context}"""
+2. Secondary Source: Enrich with advanced pedagogical activities and real-world links.
+3. Mix: Blend textbook accuracy with AI creativity.
+
+Details:
+- Duration: ${p.duration} min
+- Objectives: ${p.objectives}
+
+Output:
+Strict JSON with: 'title', 'topic', 'objectives', 'materialsNeeded', 'timeline', 'assessment'.`;
     },
 
     "educational-consultant": (p: EngineContext) => {
@@ -123,6 +176,40 @@ const TEACHER_ENGINES = {
             : `Role: Trusted Tech Advisor (Not a Salesman).
                Task: Rewrite the description for: "${p.topic}" to sound like a golden tip for a teacher struggling with: "${p.context || 'time management'}".
                Style: Use a "I finally found the solution" tone. Focus on saving time/effort. Do NOT mention you are AI.`;
+    },
+
+    "book-indexer": (p: EngineContext) => {
+        return p.language === 'ar'
+            ? `الدور: خبير في هيكلة المناهج التعليمية وتحليل النصوص المستخرجة عبر OCR.
+               المهمة: استخراج "فهرس محتويات" دقيق وشامل من النص التالي المأخوذ من صفحات الفهرس في كتاب (${p.subject}).
+               
+               النص الخام (قد يحتوي على أخطاء من معالج الصور OCR):
+               """${p.context}"""
+               
+               المتطلبات:
+               1. تحديد الوحدات (Units)، الفصول (Chapters)، والدروس (Lessons).
+               2. تجاهل أرقام الصفحات العشوائية أو النصوص الجانبية غير المفيدة.
+               3. المخرجات يجب أن تكون JSON كائن واحد يحتوي على:
+                  - 'summary': مخلص تعليمي للكتاب (فقرة قصيرة).
+                  - 'chapters': مصفوفة من الكائنات، كل كائن له: { "title": "العنوان الفعلي للدرس أو الفصل", "type": "unit|chapter|lesson", "page": رقم الصفحة إن وجد }
+                  - 'grade': الصف الدراسي المكتشف.
+               
+               ملاحظة: إذا وجدت عنواناً رئيسياً متبوعاً بعنوان فرعي، فقم بدمجهما في عنوان واحد واضح.`
+            : `Role: Professional Curriculum Structurist & OCR Post-Processor.
+               Task: Extract a precise and comprehensive Table of Contents from the following noisy OCR text for (${p.subject}).
+               
+               Raw OCR Text:
+               """${p.context}"""
+               
+               Requirements:
+               1. Identify Units, Chapters, and Lessons clearly.
+               2. Filter out random symbols, page numbers that aren't titles, and noise.
+               3. Output MUST be a single JSON object with:
+                  - 'summary': Brief educational overview.
+                  - 'chapters': Array of objects: { "title": "Real title text", "type": "unit|chapter|lesson", "page": number|null }
+                  - 'metadata': Detected grade/target audience.
+               
+               Note: Combine main titles and subtitles if they belong together for a single lesson plan.`;
     }
 };
 

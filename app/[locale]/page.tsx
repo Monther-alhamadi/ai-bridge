@@ -39,7 +39,9 @@ export default async function LandingPage({ params: { locale } }: LandingPagePro
         <div className="container relative z-10 flex flex-col items-center text-center">
           <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {dictionary.hero.title}
+              {locale === 'ar' 
+                ? 'توقف عن التحضير اليدوي.. دع النظام يقرأ كتابك ويجدول عامك الدراسي في دقيقتين' 
+                : 'Stop manual planning... Let the system read your book and schedule your year in 2 minutes'}
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
@@ -47,11 +49,11 @@ export default async function LandingPage({ params: { locale } }: LandingPagePro
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="#professions"
-              className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:scale-105"
+              href={`/${locale}/tools/teacher`}
+              className="inline-flex h-16 items-center justify-center rounded-2xl bg-primary px-10 text-xl font-black text-primary-foreground shadow-2xl transition-all hover:bg-primary/90 hover:scale-105 hover:shadow-primary/30"
             >
-              {dictionary.hero.cta_primary}
-              <ArrowRight className={locale === "ar" ? "mr-2 h-5 w-5 rotate-180" : "ml-2 h-5 w-5"} />
+              {locale === 'ar' ? 'ابدأ رحلتك المجانية' : 'Start Your Free Journey'}
+              <ArrowRight className={locale === "ar" ? "mr-3 h-6 w-6 rotate-180" : "ml-3 h-6 w-6"} />
             </Link>
           </div>
         </div>

@@ -449,5 +449,111 @@ if (typeof window !== 'undefined' && window.trackEvent) {
         </article>
       `
     }
+  },
+  "plan-week-in-15-minutes": {
+    slug: "plan-week-in-15-minutes",
+    title: {
+      ar: "كيف تخطط لأسبوع دراسي كامل في 15 دقيقة؟ (وداعاً للعمل في الإجازة)",
+      en: "Stop Working Weekends: How to Plan Your Entire School Week in 15 Minutes"
+    },
+    description: {
+      ar: "هل تقضي عطلتك في كتابة التحضير؟ اكتشف كيف يستخدم المعلمون الأذكياء الذكاء الاصطناعي لإنهاء عمل الأسبوع كله قبل أن تبرد قهوتهم.",
+      en: "Are you spending your Sunday prepping? Discover how smart teachers use AI to finish a week's worth of work before their coffee gets cold."
+    },
+    excerpt: {
+      ar: "هل تقضي عطلتك في كتابة التحضير؟ اكتشف كيف يستخدم المعلمون الأذكياء الذكاء الاصطناعي لإنهاء عمل الأسبوع كله قبل أن تبرد قهوتهم.",
+      en: "Are you spending your Sunday prepping? Discover how smart teachers use AI to finish a week's worth of work before their coffee gets cold."
+    },
+    author: "AI Bridge Editorial Team",
+    publishedAt: "2026-01-18T10:00:00Z",
+    updatedAt: "2026-01-18T10:00:00Z",
+    readingTime: 6,
+    category: { en: "Productivity", ar: "الإنتاجية" },
+    tags: ["Productivity", "Time Management", "Lesson Planning", "AI for Teachers"],
+    image: "/hero-week-planning.jpg",
+    seoKeywords: ["lesson planning", "ai for teachers", "تحضير الدروس", "ذكاء اصطناعي للمعلمين", "teacher burnout"],
+    affiliateProducts: [
+      {
+        name: "Gamma App",
+        url: "https://gamma.app/",
+        discountCode: "TEACHAI20",
+        description: { 
+          en: "Create stunning presentations from text in seconds.", 
+          ar: "أنشئ عروضاً تقديمية مذهلة من النصوص في ثوانٍ." 
+        },
+        priority: 1
+      },
+      {
+        name: "Notion",
+        url: "https://notion.so/",
+        description: { 
+          en: "The all-in-one workspace for your notes and tasks.", 
+          ar: "مساحة عمل متكاملة للملاحظات والمهام." 
+        },
+        priority: 2
+      }
+    ],
+    content: {
+      ar: `
+        <article class="prose lg:prose-xl dark:prose-invert">
+          <h2>المشكلة: لماذا التحضير التقليدي يقتل شغفك؟</h2>
+          <p>كل معلم يعرف هذا الشعور: مساء الجمعة (أو الأحد)، كوب قهوة بارد، وعشرات الصفحات التي يجب ملؤها. التحضير اليدوي ليس مجرد "تعب"، بل هو سارق للوقت الذي يجب أن تقضيه مع عائلتك.</p>
+          
+          <h2>لماذا يفشل ChatGPT العادي؟</h2>
+          <p>الكثير جربوا ChatGPT وكانت النتيجة: "كلام عام، لا علاقة له بالمنهج، ومصطلحات غريبة". السبب هو أن ChatGPT لا يملك <strong>"سياق الكتاب"</strong> (Context Memory). هو يؤلف، لا يحضر.</p>
+
+          <h2>الحل: نظام Teacher OS (عقلك الثاني)</h2>
+          <p>تخيل أداة تقرأ كتابك المدرسي أولاً، ثم تكتب التحضير بناءً عليه. هذا ما بنيناه في <strong>Teacher OS</strong>.</p>
+          <ul>
+            <li><strong>الخطوة 1:</strong> ارفع ملف الـ PDF مرة واحدة.</li>
+            <li><strong>الخطوة 2:</strong> اختر الدرس والمدة الزمنية.</li>
+            <li><strong>الخطوة 3:</strong> احصل على خطة، أنشطة، واختبارات متوافقة مع تصنيف بلوم.</li>
+          </ul>
+
+          <div class="my-8 flex justify-center">
+            <a href="/tools/lesson-planner" class="px-8 py-4 bg-primary text-white rounded-2xl font-black shadow-lg hover:scale-105 transition-transform">
+              جرب مخطط الدروس الذكي مجاناً
+            </a>
+          </div>
+
+          <h2>نصيحة الخبراء: لا تبدأ من الصفر في العروض التقديمية</h2>
+          <p>بعد أن تحصل على خطة الدرس من أداتنا، لا تضيع وقتك في تصميم شرائح PowerPoint. أنصحك باستخدام أداة <strong>Gamma App</strong>. هي تأخذ النص الذي ولدناه لك، وتحوله إلى عرض تقديمي مبهر في ثوانٍ.</p>
+          
+          <blockquote class="italic text-slate-600 dark:text-slate-400 border-r-4 border-primary pr-4 py-2">
+            "الذكاء الاصطناعي لن يستبدل المعلم، لكن المعلم الذي يستخدم الذكاء الاصطناعي سيستبدل الذي لا يستخدمه."
+          </blockquote>
+        </article>
+      `,
+      en: `
+        <article class="prose lg:prose-xl dark:prose-invert">
+          <h2>The Problem: Why Traditional Prep is Killing Your Passion</h2>
+          <p>Every teacher knows the feeling: Friday evening, a cold cup of coffee, and dozens of pages to fill. Manual preparation isn't just "tiring"—it's a thief of time you should spend with your family.</p>
+          
+          <h2>Why Regular ChatGPT Fails?</h2>
+          <p>Many tried ChatGPT and the result was: "generic talk, unrelated to the curriculum, and weird terms." The reason is that ChatGPT doesn't have <strong>"Context Memory"</strong>. It improvises, it doesn't prepare.</p>
+
+          <h2>The Solution: Teacher OS (Your Second Brain)</h2>
+          <p>Imagine a tool that reads your textbook first, then writes the prep based on it. That's what we built in <strong>Teacher OS</strong>.</p>
+          <ul>
+            <li><strong>Step 1:</strong> Upload your PDF once.</li>
+            <li><strong>Step 2:</strong> Choose the lesson and duration.</li>
+            <li><strong>Step 3:</strong> Get a plan, activities, and exams aligned with Bloom's Taxonomy.</li>
+          </ul>
+
+          <div class="my-8 flex justify-center">
+            <a href="/tools/lesson-planner" class="px-8 py-4 bg-primary text-white rounded-2xl font-black shadow-lg hover:scale-105 transition-transform">
+              Try Smart Lesson Planner Free
+            </a>
+          </div>
+
+          <h2>Expert Tip: Don't Start from Scratch for Presentations</h2>
+          <p>After you get the lesson plan from our tool, don't waste time designing PowerPoint slides. I recommend using <strong>Gamma App</strong>. It takes the text we generated for you and turns it into a stunning presentation in seconds.</p>
+          
+          <blockquote class="italic text-slate-600 dark:text-slate-400 border-l-4 border-primary pl-4 py-2">
+            "AI won't replace the teacher, but the teacher who uses AI will replace the one who doesn't."
+          </blockquote>
+        </article>
+      `
+    }
   }
 };

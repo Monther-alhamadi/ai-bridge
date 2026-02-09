@@ -15,8 +15,8 @@ const groq = process.env.GROQ_API_KEY
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  console.log(">>> AI API: POST Request Started");
   try {
-    // 1. Parse FormData
     const formData = await req.formData();
     const tool = formData.get("tool") as string;
     const profession = formData.get("profession") as string;
@@ -24,73 +24,93 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
 
     if (!groq) {
-      return NextResponse.json(
-        { error: "AI Service Unavailable (Missing API Key)" },
-        { status: 503 }
-      );
+      console.error(">>> AI API: Groq key missing");
+      return NextResponse.json({ error: "AI Service Unavailable" }, { status: 503 });
     }
 
-    // 2. Parse Parameters
     let params: ToolPromptParams = JSON.parse(paramsJson);
 
-    // 3. Handle File Extraction (Server-Side)
     if (file) {
+      console.log(">>> AI API: Processing file...");
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       try {
         const data = await pdf(buffer);
-        // Truncate to avoid context window limits (approx 15k chars)
-        const extractedText = data.text.substring(0, 15000);
-        params.context = `[EXTRACTED CONTENT FROM FILE]:\n${extractedText}\n[END OF FILE CONTENT]`;
+        params.context = `[EXTRACTED CONTENT FROM FILE]:\n${data.text.substring(0, 15000)}\n[END]`;
       } catch (e) {
-        console.error("PDF Parse Error:", e);
-        return NextResponse.json({ error: "Failed to read PDF file" }, { status: 400 });
+        console.error(">>> AI API: PDF Parse Error:", e);
       }
     }
 
-    // 4. Build the Engineered Prompt
     let systemPrompt = "";
-
-    // A. Try New Centralized Engine (Teacher OS)
+    if (params.customPrompt) {
+        systemPrompt = params.customPrompt;
     // @ts-ignore
-    if (AI_ENGINES[tool]) {
-        // Cast params to new EngineContext
+    } else if (AI_ENGINES[tool]) {
         systemPrompt = getPrompt(tool, params as unknown as EngineContext);
-    } 
-    // B. Fallback to Historic Factory (Legacy Tools)
-    else {
+    } else {
         // @ts-ignore
         const promptBuilder = PROMPT_FACTORY[profession]?.[tool];
-        if (!promptBuilder) {
-             return NextResponse.json({ error: "Invalid tool or profession" }, { status: 400 });
-        }
+        if (!promptBuilder) return NextResponse.json({ error: "Invalid tool" }, { status: 400 });
         systemPrompt = promptBuilder(params);
     }
 
-    // 5. Call AI Model (Llama-3-8b-8192 for speed/cost, or larger for complex tasks)
-    const completion = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: "You are a specialized AI assistant. You MUST reply with valid JSON only. Do not include markdown formatting like ```json ... ```. Just the raw JSON object." },
-        { role: "user", content: systemPrompt },
-      ],
-      model: "llama3-70b-8192", // Using 70b for higher intelligence on complex tasks
-      temperature: 0.3, // Low temperature for consistent, strict output
-      response_format: { type: "json_object" }, // Enforce JSON mode
-    });
+    console.log(`>>> AI API: Calling Groq (Model: llama-3.3-70b-versatile, Lang: ${params.language || params.locale || 'en'})`);
+    
+    let completion;
+    let retries = 0;
+    const maxRetries = 2;
 
-    const result = completion.choices[0]?.message?.content;
-
-    if (!result) {
-      throw new Error("Empty response from AI");
+    while (retries <= maxRetries) {
+      try {
+        completion = await groq.chat.completions.create({
+          messages: [
+            { 
+              role: "system", 
+              content: `You are a specialized AI assistant. YOU MUST REPLY IN ${params.language === 'ar' || params.locale === 'ar' ? 'ARABIC' : 'ENGLISH'}. You MUST reply with valid JSON only. All values inside the JSON must be in the specified language.` 
+            },
+            { role: "user", content: systemPrompt },
+          ],
+          model: "llama-3.3-70b-versatile",
+          temperature: 0.1,
+          response_format: { type: "json_object" },
+        });
+        break; // Success!
+      } catch (err: any) {
+        retries++;
+        console.error(`>>> AI API: Attempt ${retries} failed:`, err.message);
+        if (retries > maxRetries) throw err;
+        await new Promise(resolve => setTimeout(resolve, 1000 * retries)); // Exponential backoff-ish
+      }
     }
 
+    const result = completion?.choices[0]?.message?.content;
+    console.log(">>> AI API: Response received successfully");
+
+    if (!result) throw new Error("Empty response from AI");
     return NextResponse.json(JSON.parse(result));
 
   } catch (error: any) {
-    console.error("AI Generation Error:", error);
+    console.error(">>> AI API ERROR DETAIL:", {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause,
+      status: error.status,
+      type: error.type
+    });
+    
+    // Check for common network errors
+    const isNetworkError = error.message?.toLowerCase().includes('connect') || 
+                          error.message?.toLowerCase().includes('timeout') ||
+                          error.message?.toLowerCase().includes('fetch');
+
     return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 }
+      { 
+        error: isNetworkError ? "AI Service Connection Timeout/Error" : "AI Generation Failed",
+        details: error.message 
+      },
+      { status: isNetworkError ? 504 : 500 }
     );
   }
 }
+
