@@ -70,23 +70,33 @@ export function EducationalConsultant({ locale, profession, toolSlug }: Educatio
         setStatus(locale === 'ar' ? 'صياغة الحل المقترح...' : 'Crafting suggested solution...');
       }, 600);
 
-      const res = await fetch('/api/ai/generate', {
-        method: 'POST',
-        body: formData,
-      });
+       const res = await fetch('/api/ai/generate', {
+         method: 'POST',
+         body: formData,
+       });
 
       clearInterval(interval);
       setProgress(100);
       setStatus(locale === 'ar' ? 'تم تجهيز الاستشارة!' : 'Consultation ready!');
 
-      const data = await res.json();
-      setOutput(data);
-      setTimeout(() => setIsGenerating(false), 1000);
-      toast.success(locale === 'ar' ? 'الاستشارة جاهزة' : 'Consultation ready');
+       const data = await res.json();
+       if (!res.ok || data?.error) {
+         throw new Error(data?.error || 'Consultation generation failed');
+       }
+
+       setOutput(data.result || data);
+       setTimeout(() => setIsGenerating(false), 1000);
+       toast.success(locale === 'ar' ? 'الاستشارة جاهزة' : 'Consultation ready');
 
     } catch (error) {
       setIsGenerating(false);
-      toast.error('Failed to generate consultation');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : locale === 'ar'
+            ? 'فشل توليد الاستشارة'
+            : 'Failed to generate consultation',
+      );
     }
   };
 
@@ -104,6 +114,7 @@ export function EducationalConsultant({ locale, profession, toolSlug }: Educatio
         : 'حلول احترافية لإدارة الصف، التواصل مع أولياء الأمور، والمشاريع التعليمية المبتكرة.'}
       locale={locale}
       icon={<UserRound className="w-8 h-8" />}
+      toolSlug="educational-consultant"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Controls */}

@@ -180,8 +180,8 @@ export function CurriculumArchitect({ locale }: CurriculumArchitectProps) {
     toast.dismiss();
     toast.success(
       locale === "ar"
-        ? "تم إنشاء الجدول بنجاح"
-        : "Schedule created successfully",
+        ? "تم إنشاء الجدول. الخطوة التالية: افتح أول درس للتحضير."
+        : "Schedule created. Next step: open the first lesson for planning.",
     );
 
     // Auto-advance to planning step to show result
@@ -249,6 +249,7 @@ export function CurriculumArchitect({ locale }: CurriculumArchitectProps) {
       }
       locale={locale}
       icon={<Calendar className="w-8 h-8" />}
+      toolSlug="curriculum-architect"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Panel: Configuration */}

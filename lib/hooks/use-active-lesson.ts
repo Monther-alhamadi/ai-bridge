@@ -21,7 +21,7 @@ export function useActiveLesson() {
     const lessons = await db.lessons
         .where('textbookId')
         .equals(textbookId)
-        .and(l => l.status === 'pending')
+        .and(l => l.status === 'pending' || l.status === 'planned')
         .toArray();
 
     if (lessons.length === 0) return null;

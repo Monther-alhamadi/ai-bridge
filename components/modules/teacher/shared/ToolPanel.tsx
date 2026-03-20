@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/Badge';
+import { TeacherWorkflowNavigator } from './TeacherWorkflowNavigator';
+import type { TeacherWorkflowToolSlug } from '@/lib/teacher-workflows';
 
 interface ToolPanelProps {
   children: React.ReactNode;
@@ -12,9 +14,18 @@ interface ToolPanelProps {
   icon?: React.ReactNode;
   locale: 'en' | 'ar';
   backLink?: string;
+  toolSlug?: TeacherWorkflowToolSlug;
 }
 
-export function ToolPanel({ children, title, description, icon, locale, backLink }: ToolPanelProps) {
+export function ToolPanel({
+  children,
+  title,
+  description,
+  icon,
+  locale,
+  backLink,
+  toolSlug,
+}: ToolPanelProps) {
   const isRTL = locale === 'ar';
   const effectiveBackLink = backLink || `/${locale}/tools/teacher`;
 
@@ -41,6 +52,14 @@ export function ToolPanel({ children, title, description, icon, locale, backLink
               </div>
            </div>
         </header>
+
+        {toolSlug && (
+          <TeacherWorkflowNavigator
+            locale={locale}
+            currentTool={toolSlug}
+            variant="compact"
+          />
+        )}
 
         {/* Main Content */}
         <main className="relative">

@@ -229,14 +229,32 @@ export function LessonPlanner({ locale, profession, toolSlug }: LessonPlannerPro
       setStatus(locale === 'ar' ? 'تم إنشاء الخطة!' : 'Plan created!');
 
       const data = await res.json();
-      setOutput(data);
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Lesson plan generation failed');
+      }
+
+      setOutput(data.result || data);
+
+      if (lessonIdParam) {
+        const lessonId = parseInt(lessonIdParam);
+        if (!Number.isNaN(lessonId)) {
+          await db.lessons.update(lessonId, { status: 'planned' });
+        }
+      }
+
       setIsGenerating(false);
       toast.success(locale === 'ar' ? 'خطة الدرس جاهزة' : 'Lesson plan ready');
       triggerConfetti(); // Celebrate success!
 
     } catch (error) {
       setIsGenerating(false);
-      toast.error('Failed to generate lesson plan');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : locale === 'ar'
+            ? 'فشل إنشاء خطة الدرس'
+            : 'Failed to generate lesson plan',
+      );
     }
   };
 
@@ -249,6 +267,7 @@ export function LessonPlanner({ locale, profession, toolSlug }: LessonPlannerPro
           : 'أنشئ خطط دروس متكاملة بناءً على معايير المناهج واستراتيجيات التعلم النشط.'}
         locale={locale}
         icon={<BookOpen className="w-8 h-8" />}
+        toolSlug="lesson-planner"
       >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Controls */}

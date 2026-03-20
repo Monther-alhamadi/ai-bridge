@@ -24,6 +24,8 @@ import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PremiumModal } from './shared/PremiumModal';
+import { useRouter } from 'next/navigation';
+import { TeacherWorkflowNavigator } from './shared/TeacherWorkflowNavigator';
 
 interface SubjectSettingsProps {
   locale: 'en' | 'ar';
@@ -32,6 +34,7 @@ interface SubjectSettingsProps {
 export function SubjectSettings({ locale }: SubjectSettingsProps) {
   const isRTL = locale === 'ar';
   const { textbooks, activeTextbookId, setActiveTextbookId } = useCurriculum();
+  const router = useRouter();
   
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -95,6 +98,7 @@ export function SubjectSettings({ locale }: SubjectSettingsProps) {
 
     setIsUploading(true);
     try {
+      const shouldAutoAdvance = (textbooks?.length ?? 0) === 0;
       const id = await db.textbooks.add({
         ...newSubject,
         bookFile: tempFile || undefined,
@@ -106,6 +110,12 @@ export function SubjectSettings({ locale }: SubjectSettingsProps) {
       
       setActiveTextbookId(id as number);
       toast.success(locale === 'ar' ? 'تمت إضافة المادة بنجاح' : 'Subject added successfully');
+
+      if (shouldAutoAdvance) {
+        router.push(`/${locale}/tools/teacher/curriculum-architect?bookId=${id}`);
+        return;
+      }
+
       setNewSubject({ title: '', grade: '', schedule: [1,2,3,4,5], lessonsPerDay: 1, currentLesson: 1 });
       setTempFile(null);
       setStep(1);
@@ -137,6 +147,12 @@ export function SubjectSettings({ locale }: SubjectSettingsProps) {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4" dir={isRTL ? "rtl" : "ltr"}>
+      <TeacherWorkflowNavigator
+        locale={locale}
+        currentTool="subjects"
+        variant="compact"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-start gap-4">

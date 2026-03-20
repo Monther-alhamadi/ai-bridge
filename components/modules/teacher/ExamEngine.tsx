@@ -355,6 +355,7 @@ export function ExamEngine({ locale, profession, toolSlug }: ExamEngineProps) {
         : 'حوّل الكتب والوثائق إلى اختبارات مدرسية احترافية مع ترويسة مخصصة لمدرستك.'}
       locale={locale}
       icon={<FileText className="w-8 h-8" />}
+      toolSlug="exam-generator"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Control Panel (4/12) */}

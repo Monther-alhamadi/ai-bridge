@@ -25,6 +25,7 @@ import { LivingAssistantHeader } from "./teacher/LivingAssistantHeader";
 import { ProactiveActionHub } from "./teacher/ProactiveActionHub";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { SyncEngine } from "@/lib/sync-engine";
+import { TeacherWorkflowNavigator } from "./teacher/shared/TeacherWorkflowNavigator";
 
 interface TeacherModuleProps {
   locale: "en" | "ar";
@@ -135,6 +136,8 @@ export function TeacherModule({ locale, profession, toolSlug }: TeacherModulePro
       />
       
       <ImpactStatsWidget locale={locale} />
+
+      <TeacherWorkflowNavigator locale={locale} variant="dashboard" />
 
       <GuideOverlay locale={locale} />
       
