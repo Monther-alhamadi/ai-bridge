@@ -1,4 +1,4 @@
-import Dexie, { type Table } from 'dexie';
+import Dexie, { type Table } from "dexie";
 
 // Type Aliases for backward/forward compatibility
 export type Subject = Textbook;
@@ -22,7 +22,7 @@ export interface Textbook {
   updatedAt?: Date;
   createdAt?: Date;
   currentLesson?: number; // Phase 31: Curriculum Sync
-  contentLanguage?: 'en' | 'ar'; // Detected language of the uploaded textbook
+  contentLanguage?: "en" | "ar"; // Detected language of the uploaded textbook
 }
 
 export interface Lesson {
@@ -32,9 +32,25 @@ export interface Lesson {
   title: string;
   objectives?: string[]; // New
   contentContext?: string; // Existing
-  status: 'planned' | 'completed' | 'skipped' | 'pending';
+  status: "planned" | "completed" | "skipped" | "pending";
   weekNumber?: number;
   createdAt?: Date;
+}
+
+export interface NewsItem {
+  id?: number;
+  title_en: string;
+  title_ar: string;
+  summary_en: string;
+  summary_ar: string;
+  source: string;
+  source_link: string;
+  date: string;
+  tag: string;
+  score: number;
+  intent: "education" | "coding" | "general";
+  read: boolean;
+  createdAt: Date;
 }
 
 export interface UserSettings {
@@ -47,15 +63,15 @@ export class TeacherOSDatabase extends Dexie {
   textbooks!: Table<Textbook>;
   lessons!: Table<Lesson>;
   settings!: Table<UserSettings>;
+  news!: Table<NewsItem>;
 
   constructor() {
-    super('TeacherOSDB');
-    this.version(2).stores({
-      textbooks: '++id, title, grade',
-      lessons: '++id, textbookId, date, status',
-      settings: '++id, key'
-    }).upgrade(tx => {
-        // Handle migration if needed, but since we are in early dev we can just bump version
+    super("TeacherOSDB");
+    this.version(3).stores({
+      textbooks: "++id, title, grade",
+      lessons: "++id, textbookId, date, status",
+      settings: "++id, key",
+      news: "++id, source_link, date",
     });
   }
 }
